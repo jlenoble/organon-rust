@@ -1,2 +1,2 @@
 [workspace]
-members = ["packages/minigrep", "packages/webserver"]
+members = ["packages/minigrep", "packages/sandbox", "packages/webserver"]
