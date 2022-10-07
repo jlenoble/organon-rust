@@ -8,16 +8,6 @@
 use core::panic::PanicInfo;
 use rustos::println;
 
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
-
-    loop {
-    }
-}
-
-#[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     rustos::test_panic_handler(info)
@@ -25,11 +15,13 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Hello World!");
-
-    #[cfg(test)]
     test_main();
 
     loop {
     }
+}
+
+#[test_case]
+fn test_println() {
+    println!("test_println output");
 }
