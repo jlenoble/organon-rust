@@ -12,9 +12,7 @@ use rustos::println;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-
-    loop {
-    }
+    rustos::hlt_loop();
 }
 
 #[cfg(test)]
@@ -33,6 +31,5 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     println!("It did not crash!");
-    loop {
-    }
+    rustos::hlt_loop();
 }
