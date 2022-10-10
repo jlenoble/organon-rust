@@ -5,8 +5,13 @@
 #![test_runner(rustos::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+#![deny(unsafe_op_in_unsafe_fn)]
+
 use core::panic::PanicInfo;
 use rustos::println;
+use bootloader::{ BootInfo, entry_point };
+
+entry_point!(kernel_main);
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -21,16 +26,9 @@ fn panic(info: &PanicInfo) -> ! {
     rustos::test_panic_handler(info)
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     println!("Hello World!");
-
     rustos::init();
-
-    use x86_64::registers::control::Cr3;
-
-    let (level_4_page_table, _) = Cr3::read();
-    println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
 
     #[cfg(test)]
     test_main();
