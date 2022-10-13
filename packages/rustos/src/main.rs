@@ -13,6 +13,7 @@ use core::panic::PanicInfo;
 use rustos::println;
 use bootloader::{ BootInfo, entry_point };
 use alloc::{ boxed::Box, vec, vec::Vec, rc::Rc };
+use rustos::task::{ Task, executor::Executor, keyboard };
 
 entry_point!(kernel_main);
 
@@ -27,6 +28,15 @@ fn panic(info: &PanicInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     rustos::test_panic_handler(info)
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async number: {}", number);
 }
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -59,6 +69,11 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("current reference count is {}", Rc::strong_count(&cloned_reference));
     core::mem::drop(reference_counted);
     println!("reference count is {} now", Rc::strong_count(&cloned_reference));
+
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
 
     #[cfg(test)]
     test_main();
