@@ -1,3 +1,8 @@
 [workspace]
-members = ["packages/minigrep", "packages/sandbox", "packages/webserver"]
+members = [
+    "packages/minigrep",
+    "packages/organon",
+    "packages/sandbox",
+    "packages/webserver",
+]
 exclude = ["packages/rustos"]
