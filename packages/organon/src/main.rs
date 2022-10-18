@@ -1,3 +1,6 @@
+#![no_std]
+
+use extern_deps::{ std::println };
 use organon::todolist::TodoList;
 
 fn main() {
