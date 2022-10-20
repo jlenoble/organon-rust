@@ -13,7 +13,7 @@ pub mod tests {
     use super::{ HasData, IsData };
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    pub struct ItemData(String);
+    pub struct ItemData(pub String);
 
     impl IsData for ItemData {}
 

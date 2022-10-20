@@ -14,7 +14,7 @@ pub mod tests {
     use super::{ HasId, IsId };
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-    pub struct ItemId(u64);
+    pub struct ItemId(pub u64);
 
     impl IsId for ItemId {
         fn new() -> ItemId {
