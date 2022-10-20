@@ -10,15 +10,15 @@ pub trait HasId {
 
 #[cfg(test)]
 pub mod tests {
-    use core::sync::atomic::{ AtomicU64, Ordering };
+    use core::sync::atomic::{ AtomicUsize, Ordering };
     use super::{ HasId, IsId };
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-    pub struct ItemId(pub u64);
+    pub struct ItemId(pub usize);
 
     impl IsId for ItemId {
         fn new() -> ItemId {
-            static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+            static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
             ItemId(NEXT_ID.fetch_add(1, Ordering::Relaxed))
         }
     }

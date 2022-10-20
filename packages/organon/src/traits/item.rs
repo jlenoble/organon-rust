@@ -1,6 +1,21 @@
-use super::{ id::HasId, data::HasData };
+use super::{ id::HasId, data::{ GetData, HasData } };
 
 pub trait IsItem: HasId + HasData {}
+
+pub trait GetItem {
+    type Item: IsItem;
+
+    fn get_item(&self, id: <Self::Item as HasId>::Id) -> Option<&Self::Item>;
+}
+
+impl<T: GetItem> GetData for T {
+    type Id = <<Self as GetItem>::Item as HasId>::Id;
+    type Data = <<Self as GetItem>::Item as HasData>::Data;
+
+    fn get_data(&self, id: Self::Id) -> Option<&Self::Data> {
+        Some(self.get_item(id)?.data())
+    }
+}
 
 #[cfg(test)]
 pub mod tests {
@@ -10,9 +25,9 @@ pub mod tests {
     use super::IsItem;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    struct Item {
-        id: ItemId,
-        data: ItemData,
+    pub struct Item {
+        pub id: ItemId,
+        pub data: ItemData,
     }
 
     impl IsItem for Item {}
