@@ -1,11 +1,11 @@
-use super::{ id::HasId, data::GetData, item::GetItem };
+use super::{ id::HasId, item::GetItem };
 
-pub trait IsCollection: HasId + GetItem + GetData + IntoIterator {}
+pub trait IsCollection: HasId + GetItem {}
 
 #[cfg(test)]
 mod tests {
     extern crate alloc;
-    use alloc::{ borrow::ToOwned, vec, vec::{ IntoIter, Vec } };
+    use alloc::{ borrow::ToOwned, vec, vec::Vec };
     use core::sync::atomic::{ AtomicUsize, Ordering };
     use crate::traits::data::tests::ItemData;
 
@@ -47,15 +47,6 @@ mod tests {
 
         fn get_item(&self, id: ItemId) -> Option<&Item> {
             if id.0 < self.items.len() { Some(&self.items[id.0]) } else { None }
-        }
-    }
-
-    impl IntoIterator for Collection {
-        type Item = Item;
-        type IntoIter = IntoIter<Self::Item>;
-
-        fn into_iter(self) -> Self::IntoIter {
-            self.items.into_iter()
         }
     }
 
@@ -128,26 +119,5 @@ mod tests {
             id: id3,
             data: col.get_data(id3).unwrap().clone(),
         });
-    }
-
-    #[test]
-    fn test_into_iter() {
-        let col = Collection {
-            id: CollectionId(1),
-            items: vec!["item1", "item2", "item3"]
-                .into_iter()
-                .enumerate()
-                .map(|(i, t)| Item { id: ItemId(i), data: ItemData(t.to_owned()) })
-                .collect::<Vec<Item>>(),
-        };
-
-        assert_eq!(
-            col.into_iter().collect::<Vec<Item>>(),
-            vec![
-                Item { id: ItemId(0), data: ItemData("item1".to_owned()) },
-                Item { id: ItemId(1), data: ItemData("item2".to_owned()) },
-                Item { id: ItemId(2), data: ItemData("item3".to_owned()) }
-            ]
-        )
     }
 }
