@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "packages/flatten_iterator",
     "packages/minigrep",
     "packages/organon",
     "packages/organon/extern_deps",
