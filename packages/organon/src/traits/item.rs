@@ -49,7 +49,7 @@ pub mod tests {
     }
 
     #[test]
-    fn test_is_item() {
+    fn is_item() {
         let item = Item { id: ItemId(12), data: ItemData("12".to_owned()) };
 
         assert_eq!(item.id, item.id);

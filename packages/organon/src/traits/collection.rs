@@ -51,7 +51,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_id() {
+    fn has_id() {
         let col = Collection {
             id: CollectionId(1),
             items: vec!["item1", "item2", "item3"]
@@ -68,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_item() {
+    fn get_item() {
         let col = Collection {
             id: CollectionId(1),
             items: vec!["item1", "item2", "item3"]
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_data() {
+    fn get_data() {
         let col = Collection {
             id: CollectionId(1),
             items: vec!["item1", "item2", "item3"]

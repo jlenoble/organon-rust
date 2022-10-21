@@ -27,7 +27,7 @@ pub mod tests {
     impl IsData for ItemData {}
 
     #[test]
-    fn test_has_data() {
+    fn has_data() {
         struct Item {
             data: ItemData,
         }

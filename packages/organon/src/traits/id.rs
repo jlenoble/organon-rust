@@ -24,7 +24,7 @@ pub mod tests {
     }
 
     #[test]
-    fn test_has_id() {
+    fn has_id() {
         struct Item {
             id: ItemId,
         }
