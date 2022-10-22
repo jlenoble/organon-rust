@@ -1,18 +1,21 @@
-use super::{ id::HasId, item::GetItem };
+use super::{ id::HasId, item_manager::IsItemManager };
 
-pub trait IsCollection: HasId + GetItem {}
+pub trait IsCollection: HasId + IsItemManager {}
 
 #[cfg(test)]
 mod tests {
     extern crate alloc;
     use alloc::{ borrow::ToOwned, vec, vec::Vec };
     use core::sync::atomic::{ AtomicUsize, Ordering };
-    use crate::traits::data::tests::ItemData;
+
+    use crate::result::{ err, Result };
 
     use super::super::{
+        data::{ HasData, tests::ItemData },
         data_manager::GetData,
         id::{ HasId, IsId, tests::ItemId },
-        item::{ GetItem, tests::Item },
+        item::{ IsItem, tests::Item },
+        item_manager::{ IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem },
     };
     use super::IsCollection;
 
@@ -34,6 +37,8 @@ mod tests {
 
     impl IsCollection for Collection {}
 
+    impl IsItemManager for Collection {}
+
     impl HasId for Collection {
         type Id = CollectionId;
 
@@ -42,11 +47,46 @@ mod tests {
         }
     }
 
+    impl CreateItem for Collection {
+        type Item = Item;
+
+        fn create_item(&mut self, data: ItemData) -> Result<&Item> {
+            self.items.push(Item::new(data));
+            Ok(self.items.last().unwrap())
+        }
+    }
+
+    impl DeleteItem for Collection {
+        type Item = Item;
+
+        fn delete_item(&mut self, id: ItemId) -> Result<ItemData> {
+            if let Some(pos) = self.items.iter().position(|item| item.id() == id) {
+                Ok(self.items.remove(pos).data().clone())
+            } else {
+                Err(err!("already deleted or inexistant"))
+            }
+        }
+    }
+
+    impl UpdateItem for Collection {
+        type Item = Item;
+
+        fn update_item(&mut self, id: ItemId, data: ItemData) -> Result<&Item> {
+            if let Some(pos) = self.items.iter().position(|item| item.id() == id) {
+                self.items[pos] = Item { id, data };
+                Ok(&self.items[pos])
+            } else {
+                Err(err!("not found"))
+            }
+        }
+    }
+
     impl GetItem for Collection {
         type Item = Item;
 
         fn get_item(&self, id: ItemId) -> Option<&Item> {
-            if id.0 < self.items.len() { Some(&self.items[id.0]) } else { None }
+            let pos = self.items.iter().position(|item| item.id() == id)?;
+            Some(&self.items[pos])
         }
     }
 

@@ -1,22 +1,7 @@
-use super::{ data::HasData, data_manager::GetData, id::HasId };
+use super::{ data::HasData, id::HasId };
 
 pub trait IsItem: HasId + HasData {
     fn new(data: <Self as HasData>::Data) -> Self;
-}
-
-pub trait GetItem {
-    type Item: IsItem;
-
-    fn get_item(&self, id: <Self::Item as HasId>::Id) -> Option<&Self::Item>;
-}
-
-impl<T: GetItem> GetData for T {
-    type Id = <<Self as GetItem>::Item as HasId>::Id;
-    type Data = <<Self as GetItem>::Item as HasData>::Data;
-
-    fn get_data(&self, id: Self::Id) -> Option<&Self::Data> {
-        Some(self.get_item(id)?.data())
-    }
 }
 
 #[cfg(test)]
