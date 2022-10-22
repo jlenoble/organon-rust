@@ -1,6 +1,8 @@
 use super::{ data::HasData, data_manager::GetData, id::HasId };
 
-pub trait IsItem: HasId + HasData {}
+pub trait IsItem: HasId + HasData {
+    fn new(data: <Self as HasData>::Data) -> Self;
+}
 
 pub trait GetItem {
     type Item: IsItem;
@@ -21,7 +23,7 @@ impl<T: GetItem> GetData for T {
 pub mod tests {
     extern crate alloc;
     use alloc::borrow::ToOwned;
-    use super::super::{ id::{ HasId, tests::ItemId }, data::{ HasData, tests::ItemData } };
+    use super::super::{ data::{ HasData, tests::ItemData }, id::{ HasId, IsId, tests::ItemId } };
     use super::IsItem;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,7 +32,14 @@ pub mod tests {
         pub data: ItemData,
     }
 
-    impl IsItem for Item {}
+    impl IsItem for Item {
+        fn new(data: ItemData) -> Item {
+            Item {
+                id: ItemId::new(),
+                data,
+            }
+        }
+    }
 
     impl HasId for Item {
         type Id = ItemId;
