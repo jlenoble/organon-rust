@@ -1,1 +1,1 @@
-pub use extern_deps::color_eyre::Result;
+pub use extern_deps::color_eyre::{ eyre as err, Result };
