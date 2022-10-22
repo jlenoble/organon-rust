@@ -13,7 +13,7 @@ pub mod tests {
     use core::sync::atomic::{ AtomicUsize, Ordering };
     use super::{ HasId, IsId };
 
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct ItemId(pub usize);
 
     impl IsId for ItemId {
