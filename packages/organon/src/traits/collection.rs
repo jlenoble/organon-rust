@@ -10,7 +10,7 @@ mod tests {
     use crate::traits::data::tests::ItemData;
 
     use super::super::{
-        data::GetData,
+        data_manager::GetData,
         id::{ HasId, IsId, tests::ItemId },
         item::{ GetItem, tests::Item },
     };

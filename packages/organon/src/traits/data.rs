@@ -1,18 +1,9 @@
-use super::id::IsId;
-
 pub trait IsData {}
 
 pub trait HasData {
     type Data: IsData;
 
     fn data(&self) -> &Self::Data;
-}
-
-pub trait GetData {
-    type Id: IsId;
-    type Data: IsData;
-
-    fn get_data(&self, id: Self::Id) -> Option<&Self::Data>;
 }
 
 #[cfg(test)]

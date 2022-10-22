@@ -1,4 +1,4 @@
-use super::{ id::HasId, data::{ GetData, HasData } };
+use super::{ data::HasData, data_manager::GetData, id::HasId };
 
 pub trait IsItem: HasId + HasData {}
 
