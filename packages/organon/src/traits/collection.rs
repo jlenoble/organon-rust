@@ -2,8 +2,14 @@ use super::{ id::HasId, item_manager::IsItemManager };
 
 pub trait IsCollection: HasId + IsItemManager {}
 
+pub trait HasCollection {
+    type Collection: IsCollection;
+
+    fn collection(&self) -> &Self::Collection;
+}
+
 #[cfg(test)]
-mod tests {
+pub mod tests {
     extern crate alloc;
     use alloc::{ borrow::ToOwned, vec, vec::Vec };
     use core::sync::atomic::{ AtomicUsize, Ordering };
@@ -20,7 +26,7 @@ mod tests {
     use super::IsCollection;
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-    struct CollectionId(usize);
+    pub struct CollectionId(pub usize);
 
     impl IsId for CollectionId {
         fn new() -> CollectionId {
@@ -30,9 +36,9 @@ mod tests {
     }
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    struct Collection {
-        id: CollectionId,
-        items: Vec<Item>,
+    pub struct Collection {
+        pub id: CollectionId,
+        pub items: Vec<Item>,
     }
 
     impl IsCollection for Collection {}
