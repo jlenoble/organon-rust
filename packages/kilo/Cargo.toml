@@ -1,0 +1,8 @@
+[package]
+name = "kilo"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.25.0"
+errno = "0.2.8"
