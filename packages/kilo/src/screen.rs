@@ -1,6 +1,7 @@
 use crossterm::{ cursor, QueueableCommand, Result, style::Print, terminal };
 use std::io::{ Stdout, Write };
-use crate::error_handler::ErrorHandler;
+use pad::{ PadStr, Alignment };
+use crate::{ error_handler::ErrorHandler, cursor::Cursor };
 
 pub struct Screen {
     columns: u16,
@@ -11,7 +12,12 @@ pub struct Screen {
 
 impl Screen {
     pub fn new(stdout: Stdout, error_handler: ErrorHandler) -> Self {
-        let mut screen = Screen { columns: 1, rows: 1, stdout, buffer: String::new() };
+        let mut screen = Screen {
+            columns: 1,
+            rows: 1,
+            stdout,
+            buffer: String::new(),
+        };
 
         if let Err(e) = terminal::enable_raw_mode() {
             let ref mut screen = screen;
@@ -28,7 +34,7 @@ impl Screen {
         match terminal::size() {
             Ok((columns, rows)) => {
                 let screen = screen;
-                Screen { columns, rows, stdout: screen.stdout, buffer: screen.buffer }
+                Screen { columns, rows, ..screen }
             }
             Err(e) => {
                 let ref mut screen = screen;
@@ -37,48 +43,94 @@ impl Screen {
         }
     }
 
-    fn draw_rows(&mut self) -> Result<&mut Self> {
+    pub fn min_row(&self) -> u16 {
+        0
+    }
+
+    pub fn max_row(&self) -> u16 {
+        self.rows - 1
+    }
+
+    pub fn min_col(&self) -> u16 {
+        0
+    }
+
+    pub fn max_col(&self) -> u16 {
+        self.columns - 1
+    }
+
+    fn draw_rows(&mut self, lines: &Vec<String>, line_offset: usize) -> Result<&mut Self> {
         let last_row = self.rows - 1;
         let welcome_row = last_row / 3;
+        let mut welcome_msg = format!("{}{}", "Kilo editor -- version ", env!("CARGO_PKG_VERSION"));
+        welcome_msg.truncate(self.columns.into());
+
+        let line_iter = &mut lines[line_offset..].into_iter();
 
         for row in 0..last_row {
-            self.move_cursor(0, row)?;
+            Cursor::move_to(self, 0, row)?;
 
-            if row < welcome_row {
+            if (row as usize) >= lines.len() {
+                if row >= welcome_row {
+                    self.write('~')?;
+                }
+
+                if row == welcome_row && lines.len() == 0 {
+                    self.center_until_newline(welcome_msg.as_str(), (self.columns - 1).into())?;
+                }
+            } else if let Some(line) = line_iter.next() {
+                if line.len() < self.columns.into() {
+                    self.write_str(line.as_str())?;
+                } else {
+                    self.write_str(&line[..self.columns.into()])?;
+                }
+            }
+
+            self.clear_until_newline()?;
+        }
+
+        Cursor::move_to(self, 0, last_row)?;
+
+        if lines.len() < (self.max_row() as usize) {
+            self.clear_from_cursor_down()?;
+        } else if let Some(line) = line_iter.next() {
+            if line.len() < self.columns.into() {
+                self.write_str(line.as_str())?;
                 self.buffer.push_str(
-                    format!("{}\r\n", terminal::Clear(terminal::ClearType::UntilNewLine)).as_str()
-                );
-            } else if row == welcome_row {
-                self.buffer.push_str(
-                    format!(
-                        "{}{}\r\n",
-                        "Kilo editor -- version %s",
-                        terminal::Clear(terminal::ClearType::UntilNewLine)
-                    ).as_str()
+                    format!("{}", terminal::Clear(terminal::ClearType::FromCursorDown)).as_str()
                 );
             } else {
-                self.buffer.push_str(
-                    format!("~{}\r\n", terminal::Clear(terminal::ClearType::UntilNewLine)).as_str()
-                );
+                self.write_str(&line[..self.columns.into()])?;
             }
         }
 
-        self.move_cursor(0, last_row)?;
-        self.buffer.push_str(
-            format!("~{}", terminal::Clear(terminal::ClearType::FromCursorDown)).as_str()
-        );
+        Ok(self)
+    }
 
+    pub fn write(&mut self, c: char) -> Result<&mut Self> {
+        self.buffer.push(c);
+        Ok(self)
+    }
+
+    pub fn write_str(&mut self, s: &str) -> Result<&mut Self> {
+        self.buffer.push_str(s);
         Ok(self)
     }
 
     fn flush(&mut self) -> Result<&mut Self> {
         self.stdout.queue(Print(self.buffer.as_str()))?.flush()?;
-        self.buffer.clear();
         Ok(self)
     }
 
-    pub fn refresh(&mut self) -> Result<&mut Self> {
-        self.draw_rows()?.move_cursor(0, 0)?.flush()
+    pub fn refresh(&mut self, lines: &Vec<String>, line_offset: usize) -> Result<&mut Self> {
+        Cursor::hide(self)?;
+        self.draw_rows(lines, line_offset)?;
+
+        let (cy, cx) = Cursor::cursor();
+        Cursor::move_to(self, cy, cx)?;
+
+        Cursor::show(self)?;
+        self.flush()
     }
 
     pub fn clear(&mut self) -> Result<&mut Self> {
@@ -89,15 +141,29 @@ impl Screen {
                 cursor::MoveTo(0, 0)
             ).as_str()
         );
-        self.flush()
+        Ok(self)
     }
 
-    fn cursor_position(&self) -> Result<(u16, u16)> {
-        cursor::position()
+    pub fn clear_until_newline(&mut self) -> Result<&mut Self> {
+        self.buffer.push_str(
+            format!("{}\r\n", terminal::Clear(terminal::ClearType::UntilNewLine)).as_str()
+        );
+        Ok(self)
     }
 
-    fn move_cursor(&mut self, col: u16, row: u16) -> Result<&mut Self> {
-        self.buffer.push_str(format!("{}", cursor::MoveTo(col, row)).as_str());
+    pub fn clear_from_cursor_down(&mut self) -> Result<&mut Self> {
+        self.buffer.push_str(
+            format!("~{}", terminal::Clear(terminal::ClearType::FromCursorDown)).as_str()
+        );
+
+        Ok(self)
+    }
+
+    pub fn center_until_newline(&mut self, msg: &str, space_left: usize) -> Result<&mut Self> {
+        self.buffer.push_str(
+            format!("{}", msg.pad_to_width_with_alignment(space_left, Alignment::Middle)).as_str()
+        );
+
         Ok(self)
     }
 }

@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 crossterm = "0.25.0"
 errno = "0.2.8"
+pad = "0.1.6"
