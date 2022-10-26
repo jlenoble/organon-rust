@@ -24,7 +24,7 @@ pub mod tests {
         type Output = Size;
 
         fn sub(self, s: Size) -> Size {
-            Size(self.0 - s.0)
+            Size(if self.0 >= s.0 { self.0 - s.0 } else { 0 })
         }
     }
 
@@ -79,5 +79,13 @@ pub mod tests {
         let s4 = Size(8);
 
         assert_eq!(s1 + s2 - s4, s3 - s2 + s2 - s2 - s4 + s1 - s2);
+    }
+
+    #[test]
+    fn negative_safeguard() {
+        let s1 = Size(12);
+        let s2 = Size(4);
+
+        assert_eq!(s2 - s1, Size(0));
     }
 }
