@@ -10,7 +10,7 @@ pub trait HasId {
 
 #[cfg(test)]
 pub mod tests {
-    use core::sync::atomic::{ AtomicUsize, Ordering };
+    use crate::{ AtomicUsize, Ordering };
     use super::{ HasId, IsId };
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

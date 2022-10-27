@@ -4,7 +4,6 @@ members = [
     "packages/kilo",
     "packages/minigrep",
     "packages/organon",
-    "packages/organon/extern_deps",
     "packages/sandbox",
     "packages/webserver",
 ]

@@ -1,10 +1,10 @@
-use core::ops::{ Add, Sub };
+use crate::{ Add, Sub };
 
 pub trait IsSize: Copy + PartialEq + Add + Sub {}
 
 #[cfg(test)]
 pub mod tests {
-    use core::ops::{ Add, Sub };
+    use crate::{ Add, Sub };
     use super::IsSize;
 
     #[derive(Debug, Clone, Copy, PartialEq)]

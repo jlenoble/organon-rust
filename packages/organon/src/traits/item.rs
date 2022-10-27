@@ -6,8 +6,7 @@ pub trait IsItem: HasId + HasData {
 
 #[cfg(test)]
 pub mod tests {
-    extern crate alloc;
-    use alloc::borrow::ToOwned;
+    use crate::ToOwned;
     use super::super::{ data::{ HasData, tests::ItemData }, id::{ HasId, IsId, tests::ItemId } };
     use super::IsItem;
 

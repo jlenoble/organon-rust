@@ -1,5 +1,7 @@
 #![no_std]
 
-pub mod result;
+pub(crate) mod prelude;
+pub(crate) use prelude::*;
+
 pub mod todolist;
 pub mod traits;

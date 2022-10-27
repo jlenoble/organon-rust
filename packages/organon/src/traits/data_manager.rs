@@ -1,4 +1,4 @@
-use crate::result::Result;
+use crate::Result;
 use super::{ data::IsData, id::IsId };
 
 pub trait IsDataManager: CreateData + DeleteData + UpdateData + GetData {}
@@ -33,12 +33,7 @@ pub trait GetData {
 
 #[cfg(test)]
 mod tests {
-    extern crate std;
-    extern crate alloc;
-    use std::collections::HashMap;
-    use alloc::{ borrow::ToOwned, vec::Vec };
-
-    use crate::result::{ err, Result };
+    use crate::{ err, HashMap, Result, ToOwned, Vec };
     use super::super::{ id::{ IsId, tests::ItemId }, data::tests::ItemData };
     use super::{ IsDataManager, CreateData, DeleteData, UpdateData, GetData };
 

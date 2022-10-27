@@ -1,7 +1,4 @@
-use extern_deps::{
-    alloc::{ fmt, rc::Rc, string::{ String, ToString }, vec::Vec },
-    core::sync::atomic::{ AtomicU64, Ordering },
-};
+use crate::{ AtomicU64, fmt, Ordering, Rc, String, ToString, Vec };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TodoId(u64);

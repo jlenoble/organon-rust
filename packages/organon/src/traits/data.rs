@@ -8,8 +8,7 @@ pub trait HasData {
 
 #[cfg(test)]
 pub mod tests {
-    extern crate alloc;
-    use alloc::{ borrow::ToOwned, string::String };
+    use crate::{ String, ToOwned };
     use super::{ HasData, IsData };
 
     #[derive(Debug, Clone, PartialEq, Eq)]

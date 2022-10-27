@@ -1,4 +1,4 @@
-use crate::result::Result;
+use crate::Result;
 use super::{
     data::HasData,
     data_manager::{ IsDataManager, CreateData, DeleteData, UpdateData, GetData },
@@ -80,12 +80,7 @@ impl<T: GetItem> GetData for T {
 
 #[cfg(test)]
 mod tests {
-    extern crate std;
-    extern crate alloc;
-    use std::collections::HashMap;
-    use alloc::{ borrow::ToOwned, vec::Vec };
-
-    use crate::result::{ err, Result };
+    use crate::{ err, HashMap, Result, ToOwned, Vec };
     use super::super::{
         data::{ HasData, tests::ItemData },
         id::{ HasId, tests::ItemId },

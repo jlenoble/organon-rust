@@ -1,1 +1,0 @@
-pub use extern_deps::color_eyre::{ eyre as err, Result };

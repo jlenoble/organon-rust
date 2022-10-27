@@ -10,12 +10,7 @@ pub trait HasCollection {
 
 #[cfg(test)]
 pub mod tests {
-    extern crate alloc;
-    use alloc::{ borrow::ToOwned, vec, vec::Vec };
-    use core::sync::atomic::{ AtomicUsize, Ordering };
-
-    use crate::result::{ err, Result };
-
+    use crate::{ AtomicUsize, err, Ordering, Result, ToOwned, Vec, vec };
     use super::super::{
         data::{ HasData, tests::ItemData },
         data_manager::GetData,

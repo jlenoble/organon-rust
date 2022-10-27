@@ -1,4 +1,4 @@
-use crate::result::Result;
+use crate::Result;
 use super::{ collection::HasCollection, id::HasId, item::IsItem };
 
 pub trait IsSelection<'a>: HasId + HasCollection + SelectItem + UnselectItem {
@@ -19,12 +19,7 @@ pub trait UnselectItem {
 
 #[cfg(test)]
 mod tests {
-    extern crate alloc;
-    extern crate std;
-    use std::collections::HashSet;
-    use alloc::{ borrow::ToOwned, vec, vec::Vec };
-    use core::sync::atomic::{ AtomicUsize, Ordering };
-    use crate::result::{ err, Result };
+    use crate::{ AtomicUsize, err, HashSet, Result, Ordering, ToOwned, Vec, vec };
     use super::super::{
         collection::{ HasCollection, tests::{ Collection, CollectionId } },
         data::tests::ItemData,

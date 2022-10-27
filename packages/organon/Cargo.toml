@@ -6,4 +6,4 @@ authors = ["Jason Lenoble <jason.lenoble@gmail.com>"]
 repository = "https://github.com/jlenoble/organon-rust"
 
 [dependencies]
-extern_deps = { path = "./extern_deps" }
+color-eyre = { version = "0.6.2", default-features = false }
