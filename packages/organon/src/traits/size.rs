@@ -1,16 +1,18 @@
-use crate::{ Add, Sub };
+use super::num::IsNum;
 
-pub trait IsSize: Copy + PartialEq + Add + Sub {}
+pub trait IsSize: IsNum {}
 
 #[cfg(test)]
 pub mod tests {
     use crate::{ Add, Sub };
+    use super::super::num::IsNum;
     use super::IsSize;
 
     #[derive(Debug, Clone, Copy, PartialEq)]
     struct Size(u16);
 
     impl IsSize for Size {}
+    impl IsNum for Size {}
 
     impl Add for Size {
         type Output = Size;
