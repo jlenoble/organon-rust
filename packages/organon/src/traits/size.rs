@@ -1,11 +1,14 @@
-use super::num::IsNum;
+use super::{ num::IsNum, saturating::IsSaturating };
 
-pub trait IsSize: IsNum {}
+pub trait IsSize: IsNum + IsSaturating {}
 
 #[cfg(test)]
 pub mod tests {
     use crate::{ Add, Sub };
-    use super::super::num::IsNum;
+    use super::super::{
+        num::IsNum,
+        saturating::{ IsSaturating, IsSaturatingAdd, IsSaturatingSub },
+    };
     use super::IsSize;
 
     #[derive(Debug, Clone, Copy, PartialEq)]
@@ -13,12 +16,25 @@ pub mod tests {
 
     impl IsSize for Size {}
     impl IsNum for Size {}
+    impl IsSaturating for Size {}
+
+    impl IsSaturatingAdd for Size {
+        fn saturating_add(self, v: Size) -> Size {
+            Size(self.0.saturating_add(v.0))
+        }
+    }
+
+    impl IsSaturatingSub for Size {
+        fn saturating_sub(self, v: Size) -> Size {
+            Size(self.0.saturating_sub(v.0))
+        }
+    }
 
     impl Add for Size {
         type Output = Size;
 
         fn add(self, s: Size) -> Size {
-            Size(self.0 + s.0)
+            self.saturating_add(s)
         }
     }
 
@@ -26,7 +42,7 @@ pub mod tests {
         type Output = Size;
 
         fn sub(self, s: Size) -> Size {
-            Size(if self.0 >= s.0 { self.0 - s.0 } else { 0 })
+            self.saturating_sub(s)
         }
     }
 
@@ -84,10 +100,18 @@ pub mod tests {
     }
 
     #[test]
-    fn negative_safeguard() {
+    fn underflow_safeguard() {
         let s1 = Size(12);
         let s2 = Size(4);
 
         assert_eq!(s2 - s1, Size(0));
+    }
+
+    #[test]
+    fn overflow_safeguard() {
+        let s1 = Size(12);
+        let s2 = Size(u16::MAX);
+
+        assert_eq!(s2 + s1, Size(u16::MAX));
     }
 }
