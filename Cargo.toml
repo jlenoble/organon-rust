@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "packages/derive_builder",
     "packages/flatten_iterator",
     "packages/kilo",
     "packages/minigrep",
@@ -11,3 +12,4 @@ exclude = ["packages/rustos"]
 
 [workspace.dependencies]
 color-eyre = { version = "0.6.2" }
+trybuild = { version = "1.0.71" }
