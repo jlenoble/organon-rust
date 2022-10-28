@@ -16,5 +16,6 @@ path = "tests/progress.rs"
 trybuild = { workspace = true, features = ["diff"] }
 
 [dependencies]
+color-eyre = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
