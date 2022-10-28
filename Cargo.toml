@@ -8,3 +8,6 @@ members = [
     "packages/webserver",
 ]
 exclude = ["packages/rustos"]
+
+[workspace.dependencies]
+color-eyre = { version = "0.6.2" }
