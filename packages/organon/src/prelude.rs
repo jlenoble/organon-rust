@@ -4,7 +4,13 @@ extern crate alloc;
 pub use alloc::{ borrow::ToOwned, rc::Rc, string::{ String, ToString }, vec, vec::Vec };
 
 extern crate core;
-pub use core::{ fmt, ops::{ Add, Sub }, sync::atomic::{ AtomicU64, AtomicUsize, Ordering } };
+pub use core::{
+    cmp::PartialEq,
+    fmt,
+    marker::Copy,
+    ops::{ Add, Sub },
+    sync::atomic::{ AtomicU64, AtomicUsize, Ordering },
+};
 
 extern crate std;
 pub use std::collections::{ HashMap, HashSet };
