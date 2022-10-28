@@ -16,4 +16,5 @@ path = "tests/progress.rs"
 trybuild = { workspace = true, features = ["diff"] }
 
 [dependencies]
-# TODO
+quote = { workspace = true }
+syn = { workspace = true }

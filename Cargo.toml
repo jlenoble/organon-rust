@@ -11,5 +11,7 @@ members = [
 exclude = ["packages/rustos"]
 
 [workspace.dependencies]
-color-eyre = { version = "0.6.2" }
-trybuild = { version = "1.0.71" }
+color-eyre = "0.6.2"
+quote = "1.0.21"
+syn = "1.0.103"
+trybuild = "1.0.71"
