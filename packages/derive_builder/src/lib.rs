@@ -1,121 +1,28 @@
-use proc_macro::TokenStream;
+use proc_macro;
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{
-    DeriveInput,
-    parse_macro_input,
-    Data,
-    DataStruct,
-    Fields,
-    FieldsNamed,
-    Type,
-    TypePath,
-    Field,
-    Path,
-    PathSegment,
-};
+use syn::{ parse_macro_input, DeriveInput, Data, Fields, Field, Type, TypePath, Path, PathSegment };
 
 #[proc_macro_derive(Builder)]
-pub fn derive(input: TokenStream) -> TokenStream {
+pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
-    // pub struct Command {
-    //     executable: String,
-    //     args: Vec<String>,
-    //     env: Vec<String>,
-    //     current_dir: String,
-    // }
-
-    let data = match input.data {
-        Data::Struct(data) => data,
-        _ => panic!("Build can only be derived for Structs, not Enums nor Unions"),
-    };
-
-    let fields = match data {
-        DataStruct { fields: Fields::Named(FieldsNamed { named, .. }), .. } => named,
-        _ => panic!("Fields in Struct must be named"),
-    };
-
-    let each_required_field = fields
-        .clone()
-        .into_iter()
-        .filter_map(|field| {
-            match field {
-                Field {
-                    ident,
-                    ty: Type::Path(TypePath { path: Path { segments, .. }, qself: None }),
-                    ..
-                } => {
-                    let name = match ident {
-                        Some(name) => name,
-                        None => panic!("Found unnamed field"),
-                    };
-
-                    let is_option = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
-                        ident == "Option"
-                    } else {
-                        false
-                    };
-
-                    if !is_option {
-                        Some(
-                            quote! { 
-                                #name : match &self.#name {
-                                    Some(#name) => { #name.clone() }
-                                    None => {
-                                        return Err(eyre!("setter was never called on your builder"));
-                                    }
-                                } 
-                            }
-                        )
-                    } else {
-                        None
-                    }
-                }
-                _ => panic!("Expected only named fields"),
-            }
-        });
-
-    let each_optional_field = fields
-        .clone()
-        .into_iter()
-        .filter_map(|field| {
-            match field {
-                Field {
-                    ident,
-                    ty: Type::Path(TypePath { path: Path { segments, .. }, qself: None }),
-                    ..
-                } => {
-                    let name = match ident {
-                        Some(name) => name,
-                        None => panic!("Found unnamed field"),
-                    };
-
-                    let is_option = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
-                        ident == "Option"
-                    } else {
-                        false
-                    };
-
-                    if is_option {
-                        Some(
-                            quote! { 
-                            #name : match &self.#name {
-                                Some(n) => { Some(n.clone()) }
-                                None => None
-                            } 
-                        }
-                        )
-                    } else {
-                        None
-                    }
-                }
-                _ => panic!("Expected only named fields"),
-            }
-        });
+    let fields = quote_fields(&input.data);
 
     let expanded =
         quote! {
-    use color_eyre::{ eyre::eyre, Result };
+    use color_eyre::{eyre::eyre, Result};
+
+    impl Command {
+        pub fn builder() -> CommandBuilder {
+            CommandBuilder {
+                executable: None,
+                args: None,
+                env: None,
+                current_dir: None,
+            }
+        }
+    }
 
     pub struct CommandBuilder {
         executable: Option<String>,
@@ -146,24 +53,75 @@ pub fn derive(input: TokenStream) -> TokenStream {
         }
 
         pub fn build(&mut self) -> Result<Command> {
-            Ok(Command { 
-                #(#each_required_field ,)*
-                #(#each_optional_field ,)*
-            })
-        }
-    }
-
-    impl Command {
-        pub fn builder() -> CommandBuilder {
-            CommandBuilder {
-                executable: None,
-                args: None,
-                env: None,
-                current_dir: None,
-            }
+            Ok(Command { #fields })
         }
     }
         };
 
-    TokenStream::from(expanded)
+    proc_macro::TokenStream::from(expanded)
+}
+
+fn quote_field(field: &Field) -> TokenStream {
+    let (name, segments) = if
+        let Field {
+            ref ident,
+            ty: Type::Path(TypePath { path: Path { ref segments, .. }, qself: None }),
+            ..
+        } = field
+    {
+        (ident, segments)
+    } else {
+        panic!("Not a field");
+    };
+
+    let name = match name {
+        Some(name) => name,
+        None => panic!("Found unnamed field"),
+    };
+
+    let is_optional = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
+        ident == "Option"
+    } else {
+        false
+    };
+
+    if is_optional {
+        quote! { 
+            #name : match &self.#name {
+                Some(#name) => { Some(#name.clone()) }
+                None => { None }
+            } 
+        }
+    } else {
+        quote! {
+            #name : match &self.#name {
+                Some(#name) => { #name.clone() }
+                None => {
+                    return Err(eyre!("setter was never called on your builder"));
+                }
+            }
+        }
+    }
+}
+
+fn quote_fields(data: &Data) -> TokenStream {
+    match *data {
+        Data::Struct(ref data) => {
+            match data.fields {
+                Fields::Named(ref fields) => {
+                    let each_field = fields.named.iter().map(|field| { quote_field(field) });
+
+                    quote! {
+                        #(#each_field ,)*
+                    }
+                }
+                _ => {
+                    panic!("Fields in Struct must be named");
+                }
+            }
+        }
+        _ => {
+            panic!("Build can only be derived for Structs, not Enums nor Unions");
+        }
+    }
 }
