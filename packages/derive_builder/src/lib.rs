@@ -1,13 +1,26 @@
-use proc_macro;
 use proc_macro2::TokenStream;
-use quote::quote;
-use syn::{ parse_macro_input, DeriveInput, Data, Fields, Field, Type, TypePath, Path, PathSegment };
+use quote::{ quote, format_ident };
+use syn::{
+    parse_macro_input,
+    DeriveInput,
+    Data,
+    Fields,
+    Field,
+    Type,
+    TypePath,
+    Path,
+    PathSegment,
+    Meta,
+    MetaList,
+    NestedMeta,
+    Lit,
+};
 
-#[proc_macro_derive(Builder)]
+#[proc_macro_derive(Builder, attributes(builder))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
-    let fields = quote_fields(&input.data);
+    let (fields, methods) = quote_fields_and_methods(&input.data);
 
     let expanded =
         quote! {
@@ -17,8 +30,8 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         pub fn builder() -> CommandBuilder {
             CommandBuilder {
                 executable: None,
-                args: None,
-                env: None,
+                args: Some(vec![]),
+                env: Some(vec![]),
                 current_dir: None,
             }
         }
@@ -32,25 +45,7 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     }
 
     impl CommandBuilder {
-        fn executable(&mut self, executable: String) -> &mut Self {
-            self.executable = Some(executable);
-            self
-        }
-
-        fn args(&mut self, args: Vec<String>) -> &mut Self {
-            self.args = Some(args);
-            self
-        }
-
-        fn env(&mut self, env: Vec<String>) -> &mut Self {
-            self.env = Some(env);
-            self
-        }
-
-        fn current_dir(&mut self, current_dir: String) -> &mut Self {
-            self.current_dir = Some(current_dir);
-            self
-        }
+        #methods
 
         pub fn build(&mut self) -> Result<Command> {
             Ok(Command { #fields })
@@ -61,15 +56,16 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     proc_macro::TokenStream::from(expanded)
 }
 
-fn quote_field(field: &Field) -> TokenStream {
-    let (name, segments) = if
+fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
+    let (name, segments, attrs) = if
         let Field {
+            ref attrs,
             ref ident,
             ty: Type::Path(TypePath { path: Path { ref segments, .. }, qself: None }),
             ..
         } = field
     {
-        (ident, segments)
+        (ident, segments, attrs)
     } else {
         panic!("Not a field");
     };
@@ -79,13 +75,48 @@ fn quote_field(field: &Field) -> TokenStream {
         None => panic!("Found unnamed field"),
     };
 
-    let is_optional = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
-        ident == "Option"
+    let (is_optional, is_vec) = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
+        (ident == "Option", ident == "Vec")
     } else {
-        false
+        (false, false)
     };
 
-    if is_optional {
+    let inert_attr = if !attrs.is_empty() {
+        if let Some(meta) = attrs.first() {
+            if let Ok(Meta::List(MetaList { ref path, ref nested, .. })) = meta.parse_meta() {
+                if path.is_ident("builder") {
+                    if
+                        let Some(NestedMeta::Meta(Meta::NameValue(meta))) =
+                            Vec::from_iter(nested).first()
+                    {
+                        if meta.path.is_ident("each") {
+                            if let Lit::Str(lit) = &meta.lit {
+                                let lit = format_ident!("{}", lit.value());
+                                let lit2 = lit.clone();
+                                Some((lit, *name == lit2))
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let quot = if is_optional {
         quote! { 
             #name : match &self.#name {
                 Some(#name) => { Some(#name.clone()) }
@@ -101,19 +132,82 @@ fn quote_field(field: &Field) -> TokenStream {
                 }
             }
         }
+    };
+
+    let vec_quot = if is_vec {
+        quote! {
+            fn #name(&mut self, #name: Vec<String>) -> &mut Self {
+                self.#name = Some(#name);
+                self
+            }
+        }
+    } else {
+        quote! {
+            fn #name(&mut self, #name: String) -> &mut Self {
+                self.#name = Some(#name);
+                self
+            }
+        }
+    };
+
+    if let Some((inert_name, conflicting_method_names)) = inert_attr {
+        if conflicting_method_names {
+            (
+                quot,
+                quote! {
+                    fn #name(&mut self, #name: String) -> &mut Self {
+                        if let Some(ref mut args) = self.args {
+                            args.push(#name);
+                        } else {
+                            self.args = Some(vec![#name]);
+                        }
+
+                        self
+                    }
+                },
+            )
+        } else {
+            (
+                quot,
+                quote! {
+                    #vec_quot
+
+                    fn #inert_name(&mut self, #inert_name: String) -> &mut Self {
+                        if let Some(ref mut #name) = self.#name {
+                            args.push(#inert_name);
+                        } else {
+                            self.args = Some(vec![#inert_name]);
+                        }
+    
+                        self
+                    }
+                },
+            )
+        }
+    } else {
+        (quot, vec_quot)
     }
 }
 
-fn quote_fields(data: &Data) -> TokenStream {
+fn quote_fields_and_methods(data: &Data) -> (TokenStream, TokenStream) {
     match *data {
         Data::Struct(ref data) => {
             match data.fields {
                 Fields::Named(ref fields) => {
-                    let each_field = fields.named.iter().map(|field| { quote_field(field) });
+                    let (each_field, each_method): (
+                        Vec<TokenStream>,
+                        Vec<TokenStream>,
+                    ) = fields.named
+                        .iter()
+                        .map(|field| { quote_field_and_methods(field) })
+                        .unzip();
 
-                    quote! {
+                    (
+                        quote! {
                         #(#each_field ,)*
-                    }
+                    },
+                        quote! { #(#each_method)* },
+                    )
                 }
                 _ => {
                     panic!("Fields in Struct must be named");
