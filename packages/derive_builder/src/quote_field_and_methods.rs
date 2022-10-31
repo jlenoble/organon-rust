@@ -3,7 +3,14 @@ use proc_macro2::TokenStream;
 use quote::{ quote, format_ident };
 use syn::{ Field, Meta, MetaList, NestedMeta, Lit };
 
-use crate::field_as_named_field_with_attributes_and_type::field_as_named_field_with_attributes_and_type;
+use crate::{
+    field_as_named_field_with_attributes_and_type::field_as_named_field_with_attributes_and_type,
+    quote_methods::{
+        quote_all_at_once_setter_method,
+        quote_one_at_a_time_setter_method,
+        quote_both_setter_methods,
+    },
+};
 
 pub fn quote_field_and_methods(field: &Field) -> Result<(TokenStream, TokenStream)> {
     let (field_name, type_name, attrs) = field_as_named_field_with_attributes_and_type(
@@ -65,57 +72,20 @@ pub fn quote_field_and_methods(field: &Field) -> Result<(TokenStream, TokenStrea
         }
     };
 
-    let vec_quot = if is_vec {
-        quote! {
-            fn #field_name(&mut self, #field_name: Vec<String>) -> &mut Self {
-                self.#field_name = Some(#field_name);
-                self
-            }
-        }
-    } else {
-        quote! {
-            fn #field_name(&mut self, #field_name: String) -> &mut Self {
-                self.#field_name = Some(#field_name);
-                self
-            }
-        }
-    };
-
-    if let Some((inert_name, conflicting_method_names)) = inert_attr {
+    if let Some((ref inert_name, conflicting_method_names)) = inert_attr {
         if conflicting_method_names {
-            Ok((
-                quot,
-                quote! {
-                    fn #field_name(&mut self, #field_name: String) -> &mut Self {
-                        if let Some(ref mut args) = self.args {
-                            args.push(#field_name);
-                        } else {
-                            self.args = Some(vec![#field_name]);
-                        }
-
-                        self
-                    }
-                },
-            ))
+            Ok((quot, quote_one_at_a_time_setter_method(field_name, inert_name)))
         } else {
-            Ok((
-                quot,
-                quote! {
-                    #vec_quot
-
-                    fn #inert_name(&mut self, #inert_name: String) -> &mut Self {
-                        if let Some(ref mut #field_name) = self.#field_name {
-                            args.push(#inert_name);
-                        } else {
-                            self.args = Some(vec![#inert_name]);
-                        }
-    
-                        self
-                    }
-                },
-            ))
+            Ok((quot, quote_both_setter_methods(field_name, inert_name)))
         }
     } else {
-        Ok((quot, vec_quot))
+        Ok((
+            quot,
+            quote_all_at_once_setter_method(field_name, if is_vec {
+                quote! { Vec<String> }
+            } else {
+                quote! { String }
+            }),
+        ))
     }
 }
