@@ -1,31 +1,16 @@
+use color_eyre::{ Result, eyre::WrapErr };
 use proc_macro2::TokenStream;
 use quote::{ quote, format_ident };
-use syn::{ Field, Type, TypePath, Path, PathSegment, Meta, MetaList, NestedMeta, Lit };
+use syn::{ Field, Meta, MetaList, NestedMeta, Lit };
 
-pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
-    let (name, segments, attrs) = if
-        let Field {
-            ref attrs,
-            ref ident,
-            ty: Type::Path(TypePath { path: Path { ref segments, .. }, qself: None }),
-            ..
-        } = field
-    {
-        (ident, segments, attrs)
-    } else {
-        panic!("Not a field");
-    };
+use crate::field_as_named_field_with_attributes_and_type::field_as_named_field_with_attributes_and_type;
 
-    let name = match name {
-        Some(name) => name,
-        None => panic!("Found unnamed field"),
-    };
+pub fn quote_field_and_methods(field: &Field) -> Result<(TokenStream, TokenStream)> {
+    let (field_name, type_name, attrs) = field_as_named_field_with_attributes_and_type(
+        field
+    ).wrap_err("field should be a named field with attributes and type")?;
 
-    let (is_optional, is_vec) = if let Some(&PathSegment { ref ident, .. }) = segments.first() {
-        (ident == "Option", ident == "Vec")
-    } else {
-        (false, false)
-    };
+    let (is_optional, is_vec) = (type_name == "Option", type_name == "Vec");
 
     let inert_attr = if !attrs.is_empty() {
         if let Some(meta) = attrs.first() {
@@ -39,7 +24,7 @@ pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
                             if let Lit::Str(lit) = &meta.lit {
                                 let lit = format_ident!("{}", lit.value());
                                 let lit2 = lit.clone();
-                                Some((lit, *name == lit2))
+                                Some((lit, *field_name == lit2))
                             } else {
                                 None
                             }
@@ -64,15 +49,15 @@ pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
 
     let quot = if is_optional {
         quote! { 
-            #name : match &self.#name {
-                Some(#name) => { Some(#name.clone()) }
+            #field_name : match &self.#field_name {
+                Some(#field_name) => { Some(#field_name.clone()) }
                 None => { None }
             } 
         }
     } else {
         quote! {
-            #name : match &self.#name {
-                Some(#name) => { #name.clone() }
+            #field_name : match &self.#field_name {
+                Some(#field_name) => { #field_name.clone() }
                 None => {
                     return Err(eyre!("setter was never called on your builder"));
                 }
@@ -82,15 +67,15 @@ pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
 
     let vec_quot = if is_vec {
         quote! {
-            fn #name(&mut self, #name: Vec<String>) -> &mut Self {
-                self.#name = Some(#name);
+            fn #field_name(&mut self, #field_name: Vec<String>) -> &mut Self {
+                self.#field_name = Some(#field_name);
                 self
             }
         }
     } else {
         quote! {
-            fn #name(&mut self, #name: String) -> &mut Self {
-                self.#name = Some(#name);
+            fn #field_name(&mut self, #field_name: String) -> &mut Self {
+                self.#field_name = Some(#field_name);
                 self
             }
         }
@@ -98,28 +83,28 @@ pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
 
     if let Some((inert_name, conflicting_method_names)) = inert_attr {
         if conflicting_method_names {
-            (
+            Ok((
                 quot,
                 quote! {
-                    fn #name(&mut self, #name: String) -> &mut Self {
+                    fn #field_name(&mut self, #field_name: String) -> &mut Self {
                         if let Some(ref mut args) = self.args {
-                            args.push(#name);
+                            args.push(#field_name);
                         } else {
-                            self.args = Some(vec![#name]);
+                            self.args = Some(vec![#field_name]);
                         }
 
                         self
                     }
                 },
-            )
+            ))
         } else {
-            (
+            Ok((
                 quot,
                 quote! {
                     #vec_quot
 
                     fn #inert_name(&mut self, #inert_name: String) -> &mut Self {
-                        if let Some(ref mut #name) = self.#name {
+                        if let Some(ref mut #field_name) = self.#field_name {
                             args.push(#inert_name);
                         } else {
                             self.args = Some(vec![#inert_name]);
@@ -128,9 +113,9 @@ pub fn quote_field_and_methods(field: &Field) -> (TokenStream, TokenStream) {
                         self
                     }
                 },
-            )
+            ))
         }
     } else {
-        (quot, vec_quot)
+        Ok((quot, vec_quot))
     }
 }

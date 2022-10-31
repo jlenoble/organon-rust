@@ -4,13 +4,20 @@ use syn::{ parse_macro_input, DeriveInput };
 mod quote_field_and_methods;
 mod quote_fields_and_methods;
 
+mod field_as_named_field_with_attributes_and_type;
+mod path_segments_as_ident;
+mod path_segments_as_segment;
+mod typepath_as_ident;
+
+mod errors;
+
 use quote_fields_and_methods::quote_fields_and_methods;
 
 #[proc_macro_derive(Builder, attributes(builder))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
-    let (fields, methods) = quote_fields_and_methods(&input.data);
+    let (fields, methods) = quote_fields_and_methods(&input.data).unwrap();
 
     let expanded =
         quote! {
