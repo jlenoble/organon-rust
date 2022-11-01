@@ -6,7 +6,10 @@ mod quote_fields_and_methods;
 mod quote_field;
 mod quote_methods;
 
+mod attribute_as_path_with_name_value;
 mod field_as_named_field_with_attributes_and_type;
+mod nested_as_namevalue;
+mod nested_meta_as_single_nested;
 mod path_as_ident;
 mod path_segments_as_ident;
 mod path_segments_as_segment;
