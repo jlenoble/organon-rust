@@ -7,6 +7,7 @@ mod quote_field;
 mod quote_methods;
 
 mod field_as_named_field_with_attributes_and_type;
+mod path_as_ident;
 mod path_segments_as_ident;
 mod path_segments_as_segment;
 mod typepath_as_ident;

@@ -1,15 +1,14 @@
 use color_eyre::{ Result, eyre::{ ensure, WrapErr } };
-use syn::{ Ident, Path, TypePath };
+use syn::{ Ident, TypePath };
 
-use crate::{ path_segments_as_ident::path_segments_as_ident, errors::ExtractionError };
+use crate::{ path_as_ident::path_as_ident, errors::ExtractionError };
 
 pub fn typepath_as_ident(typepath: &TypePath) -> Result<&Ident> {
-    let TypePath { path: Path { segments, leading_colon }, qself } = typepath;
+    let TypePath { ref path, qself } = typepath;
 
-    ensure!(leading_colon.is_none(), ExtractionError::LeadingDoubleColon);
     ensure!(qself.is_none(), ExtractionError::QualifiedPath);
 
-    let ident = path_segments_as_ident(segments).wrap_err("failed to extract ident")?;
+    let ident = path_as_ident(path).wrap_err("failed to extract ident in Path")?;
 
     Ok(ident)
 }
