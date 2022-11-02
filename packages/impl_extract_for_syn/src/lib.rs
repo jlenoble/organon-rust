@@ -16,3 +16,5 @@ pub(crate) trait ExtractIter<'a>
 pub mod derive_input;
 pub mod fields;
 pub mod fields_named;
+
+pub mod type_path;
