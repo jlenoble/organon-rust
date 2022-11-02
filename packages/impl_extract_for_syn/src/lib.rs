@@ -1,11 +1,11 @@
 use quote::ToTokens;
 use syn::Result;
 
-pub(crate) trait Extract<T: ToTokens> where Self: ToTokens {
+pub trait Extract<T: ToTokens> where Self: ToTokens {
     fn extract(&self) -> Result<&T>;
 }
 
-pub(crate) trait ExtractIter<'a>
+pub trait ExtractIter<'a>
     where Self: ToTokens, <<Self as ExtractIter<'a>>::Iter as Iterator>::Item: 'a + ToTokens
 {
     type Iter: Iterator;
