@@ -2,6 +2,7 @@
 members = [
     "packages/derive_builder",
     "packages/flatten_iterator",
+    "packages/impl_extract_for_syn",
     "packages/kilo",
     "packages/minigrep",
     "packages/organon",
