@@ -1,8 +1,10 @@
-use color_eyre::{ Result, eyre::{ bail, WrapErr } };
+use color_eyre::{ Result, eyre::{ bail } };
 use proc_macro2::Ident;
 use syn::{ Field, Type, Attribute };
 
-use crate::{ typepath_as_ident::typepath_as_ident, errors::ExtractionError };
+use impl_extract_for_syn::Extract;
+
+use crate::errors::ExtractionError;
 
 pub fn field_as_named_field_with_attributes_and_type(
     field: &Field
@@ -14,7 +16,7 @@ pub fn field_as_named_field_with_attributes_and_type(
             bail!(ExtractionError::UnnamedField);
         };
 
-        let type_name = typepath_as_ident(typepath).wrap_err("failed to extract type from field")?;
+        let type_name = typepath.extract()?;
 
         Ok((field_name, type_name, attrs))
     } else {
