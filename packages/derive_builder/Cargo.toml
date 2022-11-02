@@ -23,3 +23,5 @@ syn = { workspace = true }
 # Error reporting
 color-eyre = { workspace = true }
 thiserror = { workspace = true }
+# Extractors
+impl_extract_for_syn = { path = "../impl_extract_for_syn" }
