@@ -18,3 +18,4 @@ pub mod fields;
 pub mod fields_named;
 
 pub mod type_path;
+pub mod path;
