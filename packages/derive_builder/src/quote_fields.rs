@@ -24,8 +24,8 @@ fn quote_field(field: &Field) -> Result<TokenStream> {
         Ok(
             quote! {
                 #field_name : match &self.#field_name {
-                    Some(#field_name) => { Some(#field_name.clone()) }
-                    None => { None }
+                    ::core::option::Option::Some(#field_name) => { ::core::option::Option::Some(#field_name.clone()) }
+                    ::core::option::Option::None => { ::core::option::Option::None }
                 }
             }
         )
@@ -35,8 +35,8 @@ fn quote_field(field: &Field) -> Result<TokenStream> {
         Ok(
             quote! {
                 #field_name : match &self.#field_name {
-                    Some(#field_name) => { #field_name.clone() }
-                    None => {
+                    ::core::option::Option::Some(#field_name) => { #field_name.clone() }
+                    ::core::option::Option::None => {
                         panic!(#panic_msg);
                     }
                 }

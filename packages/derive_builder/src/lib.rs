@@ -21,10 +21,10 @@ fn quote_all(input: &DeriveInput) -> TokenStream {
             impl Command {
                 pub fn builder() -> CommandBuilder {
                     CommandBuilder {
-                        executable: None,
-                        args: Some(vec![]),
-                        env: Some(vec![]),
-                        current_dir: None,
+                        executable: ::core::option::Option::None,
+                        args: ::core::option::Option::Some(::std::vec![]),
+                        env: ::core::option::Option::Some(::std::vec![]),
+                        current_dir: ::core::option::Option::None,
                     }
                 }
             }
@@ -33,10 +33,10 @@ fn quote_all(input: &DeriveInput) -> TokenStream {
     let quote_commandbuilder =
         quote! {
             pub struct CommandBuilder {
-                executable: Option<String>,
-                args: Option<Vec<String>>,
-                env: Option<Vec<String>>,
-                current_dir: Option<String>,
+                executable: ::core::option::Option<::std::string::String>,
+                args: ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                env: ::core::option::Option<::std::vec::Vec<::std::string::String>>,
+                current_dir: ::core::option::Option<::std::string::String>,
             }
         };
 
@@ -64,8 +64,8 @@ fn quote_impl_commandbuilder(input: &DeriveInput) -> Result<TokenStream> {
             impl CommandBuilder {
                 #quote_methods
 
-                pub fn build(&mut self) -> Result<Command, Box<dyn ::std::error::Error>> {
-                    Ok(Command { #quote_fields })
+                pub fn build(&mut self) -> ::std::result::Result<Command, ::std::boxed::Box<dyn ::std::error::Error>> {
+                    ::std::result::Result::Ok(Command { #quote_fields })
                 }
             }
         }

@@ -24,9 +24,9 @@ fn quote_method(field: &Field) -> Result<TokenStream> {
 
     if meta.is_none() {
         let type_name = if type_name == "Vec" {
-            quote! { Vec<String> }
+            quote! { ::std::vec::Vec<::std::string::String> }
         } else {
-            quote! { String }
+            quote! { ::std::string::String }
         };
 
         Ok(quote_eponymous_method_only(field_name, type_name))
@@ -57,7 +57,7 @@ fn quote_method(field: &Field) -> Result<TokenStream> {
 fn quote_eponymous_method_only(field_name: &Ident, type_name: TokenStream) -> TokenStream {
     quote! {
         fn #field_name(&mut self, #field_name: #type_name) -> &mut Self {
-            self.#field_name = Some(#field_name);
+            self.#field_name = ::core::option::Option::Some(#field_name);
             self
         }
     }
@@ -66,11 +66,11 @@ fn quote_eponymous_method_only(field_name: &Ident, type_name: TokenStream) -> To
 #[inline]
 fn quote_inert_method_only(field_name: &Ident, method_name: &Ident) -> TokenStream {
     quote! {
-        fn #method_name(&mut self, #field_name: String) -> &mut Self {
-            if let Some(ref mut field_name) = self.#field_name {
+        fn #method_name(&mut self, #field_name: ::std::string::String) -> &mut Self {
+            if let ::core::option::Option::Some(ref mut field_name) = self.#field_name {
                 field_name.push(#field_name);
             } else {
-                self.#field_name = Some(vec![#field_name]);
+                self.#field_name = ::core::option::Option::Some(::std::vec![#field_name]);
             }
 
             self
@@ -83,7 +83,7 @@ fn quote_both_methods(field_name: &Ident, method_name: &Ident) -> TokenStream {
     let quote_inert_method = quote_inert_method_only(field_name, method_name);
     let quote_eponymous_method: TokenStream = quote_eponymous_method_only(
         field_name,
-        quote! { Vec<String> }
+        quote! { ::std::vec::Vec<::std::string::String> }
     );
 
     quote! {
