@@ -20,8 +20,5 @@ trybuild = { workspace = true, features = ["diff"] }
 proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
-# Error reporting
-color-eyre = { workspace = true }
-thiserror = { workspace = true }
 # Extractors
 impl_extract_for_syn = { path = "../impl_extract_for_syn" }
