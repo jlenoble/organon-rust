@@ -2,7 +2,7 @@ use proc_macro2::{ TokenStream, Ident };
 use quote::{ quote, format_ident };
 use syn::{ Error, Field, Fields, Result, TypePath, MetaList, MetaNameValue };
 
-use impl_extract_for_syn::{ Extract, ExtractIter, ExtractValue };
+use synex::{ Extract, ExtractIter, ExtractValue };
 
 pub fn quote_methods(fields: &Fields) -> Result<TokenStream> {
     let mut quote_each_method: Vec<TokenStream> = Vec::new();

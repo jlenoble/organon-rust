@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{ parse_macro_input, DeriveInput, Error, Fields, Result };
 
-use impl_extract_for_syn::Extract;
+use synex::Extract;
 
 use crate::{ quote_fields::quote_fields, quote_methods::quote_methods };
 
