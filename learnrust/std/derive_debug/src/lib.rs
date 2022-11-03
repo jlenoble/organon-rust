@@ -1,8 +1,13 @@
-use proc_macro::TokenStream;
+use proc_macro;
+use proc_macro2::TokenStream;
+use quote::quote;
+use syn::{ DeriveInput, parse_macro_input };
 
 #[proc_macro_derive(CustomDebug)]
-pub fn derive(input: TokenStream) -> TokenStream {
-    let _ = input;
+pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    quote_all(&parse_macro_input!(input as DeriveInput)).into()
+}
 
-    unimplemented!()
+fn quote_all(_input: &DeriveInput) -> TokenStream {
+    quote! {}
 }
