@@ -1,12 +1,12 @@
 [workspace]
 members = [
     "learnrust/std/derive_builder",
+    "learnrust/std/derive_debug",
     "learnrust/std/flatten_iterator",
-    "learnrust/std/synex",
     "learnrust/std/kilo",
     "learnrust/std/minigrep",
     "learnrust/std/organon",
-    "learnrust/std/sandbox",
+    "learnrust/std/synex",
     "learnrust/std/webserver",
 ]
 exclude = ["learnrust/no_std/rustos"]
