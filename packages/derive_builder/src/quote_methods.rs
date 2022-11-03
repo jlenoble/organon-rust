@@ -1,28 +1,60 @@
 use proc_macro2::{ TokenStream, Ident };
-use quote::quote;
+use quote::{ quote, format_ident };
+use syn::{ Error, Field, Fields, Result, TypePath, MetaList, MetaNameValue };
 
-pub fn quote_methods(field_name: &Ident, method_name: Option<&Ident>, is_vec: bool) -> TokenStream {
-    if let Some(method_name) = method_name {
-        let conflicting_names = field_name == method_name;
+use impl_extract_for_syn::{ Extract, ExtractIter, ExtractValue };
 
-        if conflicting_names {
-            quote_global_method(field_name, method_name)
-        } else {
-            quote_both_methods(field_name, method_name)
-        }
-    } else {
-        let type_name = if is_vec {
+pub fn quote_methods(fields: &Fields) -> Result<TokenStream> {
+    let mut quote_each_method: Vec<TokenStream> = Vec::new();
+
+    for field in fields.extract_iter()? {
+        quote_each_method.push(quote_method(field)?);
+    }
+
+    Ok(quote! { #(#quote_each_method)* })
+}
+
+fn quote_method(field: &Field) -> Result<TokenStream> {
+    let field_name: &Ident = field.extract()?;
+
+    let typepath: &TypePath = field.extract()?;
+    let type_name: &Ident = typepath.extract()?;
+
+    let meta = field.extract_iter()?.next();
+
+    if meta.is_none() {
+        let type_name = if type_name == "Vec" {
             quote! { Vec<String> }
         } else {
             quote! { String }
         };
 
-        quote_individual_method(field_name, type_name)
+        Ok(quote_eponymous_method_only(field_name, type_name))
+    } else {
+        let meta = meta.unwrap();
+
+        let list: &MetaList = meta.extract()?;
+        let ident: &Ident = list.extract()?;
+        let MetaNameValue { path, lit, eq_token: _ } = list.extract()?;
+
+        let name: &Ident = path.extract()?;
+
+        if ident != "builder" || name != "each" {
+            return Err(Error::new_spanned(meta, "expected `builder(each = \"...\")`"));
+        }
+
+        let ref method_name: Ident = format_ident!("{}", lit.extract_value()?);
+
+        if field_name == method_name {
+            Ok(quote_inert_method_only(field_name, method_name))
+        } else {
+            Ok(quote_both_methods(field_name, method_name))
+        }
     }
 }
 
 #[inline]
-fn quote_individual_method(field_name: &Ident, type_name: TokenStream) -> TokenStream {
+fn quote_eponymous_method_only(field_name: &Ident, type_name: TokenStream) -> TokenStream {
     quote! {
         fn #field_name(&mut self, #field_name: #type_name) -> &mut Self {
             self.#field_name = Some(#field_name);
@@ -32,7 +64,7 @@ fn quote_individual_method(field_name: &Ident, type_name: TokenStream) -> TokenS
 }
 
 #[inline]
-fn quote_global_method(field_name: &Ident, method_name: &Ident) -> TokenStream {
+fn quote_inert_method_only(field_name: &Ident, method_name: &Ident) -> TokenStream {
     quote! {
         fn #method_name(&mut self, #field_name: String) -> &mut Self {
             if let Some(ref mut field_name) = self.#field_name {
@@ -46,17 +78,16 @@ fn quote_global_method(field_name: &Ident, method_name: &Ident) -> TokenStream {
     }
 }
 
-// args and arg, but not conflicting env and env
 #[inline]
 fn quote_both_methods(field_name: &Ident, method_name: &Ident) -> TokenStream {
-    let quote_global_method = quote_global_method(field_name, method_name);
-    let quote_individual_method: TokenStream = quote_individual_method(
+    let quote_inert_method = quote_inert_method_only(field_name, method_name);
+    let quote_eponymous_method: TokenStream = quote_eponymous_method_only(
         field_name,
         quote! { Vec<String> }
     );
 
     quote! {
-        #quote_global_method
-        #quote_individual_method
+        #quote_inert_method
+        #quote_eponymous_method
     }
 }
