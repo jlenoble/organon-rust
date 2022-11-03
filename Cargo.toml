@@ -1,15 +1,15 @@
 [workspace]
 members = [
-    "packages/derive_builder",
-    "packages/flatten_iterator",
-    "packages/impl_extract_for_syn",
-    "packages/kilo",
-    "packages/minigrep",
-    "packages/organon",
-    "packages/sandbox",
-    "packages/webserver",
+    "learnrust/std/derive_builder",
+    "learnrust/std/flatten_iterator",
+    "learnrust/std/impl_extract_for_syn",
+    "learnrust/std/kilo",
+    "learnrust/std/minigrep",
+    "learnrust/std/organon",
+    "learnrust/std/sandbox",
+    "learnrust/std/webserver",
 ]
-exclude = ["packages/rustos"]
+exclude = ["learnrust/no_std/rustos"]
 
 [workspace.dependencies]
 color-eyre = "0.6.2"
