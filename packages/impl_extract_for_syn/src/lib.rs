@@ -10,12 +10,13 @@ pub trait ExtractIter<'a>
 {
     type Iter: Iterator;
 
-    fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter>;
+    fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> where 'a: 'b;
 }
 
 pub mod derive_input;
 pub mod fields;
 pub mod fields_named;
+pub mod field;
 
 pub mod type_path;
 pub mod path;
