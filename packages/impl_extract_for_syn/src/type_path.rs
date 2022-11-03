@@ -1,21 +1,11 @@
 use proc_macro2::Ident;
-use syn::{ Error, Path, PathSegment, Result, TypePath, punctuated::Punctuated, token::Colon2 };
+use syn::{ Path, PathSegment, Result, TypePath, punctuated::Punctuated, token::Colon2 };
 
 use crate::Extract;
 
 impl Extract<Path> for TypePath {
     fn extract(&self) -> Result<&Path> {
-        let TypePath { path, qself } = self;
-
-        if qself.is_some() {
-            return Err(
-                Error::new_spanned(
-                    self,
-                    "path should not be qualified, as in <Self as HasItem>::Item"
-                )
-            );
-        }
-
+        let TypePath { path, qself: _ } = self;
         Ok(path)
     }
 }

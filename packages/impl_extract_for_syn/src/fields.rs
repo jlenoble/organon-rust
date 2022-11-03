@@ -14,7 +14,12 @@ impl Extract<FieldsNamed> for Fields {
     fn extract(&self) -> Result<&FieldsNamed> {
         match self {
             Fields::Named(fieldsnamed) => { Ok(fieldsnamed) }
-            _ => { Err(Error::new_spanned(self, "failed to extract FieldsNamed from Fields")) }
+            Fields::Unnamed(_) => {
+                Err(Error::new_spanned(self, "expected FieldsNamed as Fields, got Unnamed"))
+            }
+            Fields::Unit => {
+                Err(Error::new_spanned(self, "expected FieldsNamed as Fields, got Unit"))
+            }
         }
     }
 }

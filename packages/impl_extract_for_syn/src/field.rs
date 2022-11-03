@@ -14,11 +14,11 @@ impl Extract<Ident> for Field {
 
 impl Extract<TypePath> for Field {
     fn extract(&self) -> Result<&TypePath> {
-        match self {
-            Field { attrs: _, ident: _, ty: Type::Path(typepath), vis: _, colon_token: _ } => {
-                Ok(typepath)
+        match self.ty {
+            Type::Path(ref typepath) => { Ok(typepath) }
+            _ => {
+                Err(Error::new_spanned(self, "expected Path as Type in Field, got another Type"))
             }
-            _ => { Err(Error::new_spanned(self, "failed to extract TypePath from Field")) }
         }
     }
 }

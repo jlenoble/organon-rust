@@ -19,13 +19,11 @@ impl Extract<Fields> for DeriveInput {
             Data::Struct(DataStruct { struct_token: _, ref fields, semi_token: _ }) => {
                 Ok(fields)
             }
-            _ => {
-                Err(
-                    Error::new_spanned(
-                        self,
-                        "failed to extract Fields from DeriveInput interpreted as Data::Struct"
-                    )
-                )
+            Data::Enum(_) => {
+                Err(Error::new_spanned(self, "expected Struct as Data in DeriveInput, got Enum"))
+            }
+            Data::Union(_) => {
+                Err(Error::new_spanned(self, "expected Struct as Data in DeriveInput, got Union"))
             }
         }
     }
