@@ -1,5 +1,5 @@
 [package]
-name = "impl_extract_for_syn"
+name = "synex"
 version = "0.0.0"
 edition = "2021"
 

@@ -2,7 +2,7 @@
 members = [
     "learnrust/std/derive_builder",
     "learnrust/std/flatten_iterator",
-    "learnrust/std/impl_extract_for_syn",
+    "learnrust/std/synex",
     "learnrust/std/kilo",
     "learnrust/std/minigrep",
     "learnrust/std/organon",
