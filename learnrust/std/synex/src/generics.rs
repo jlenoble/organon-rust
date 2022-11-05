@@ -25,7 +25,7 @@ impl ExtractMut<Punctuated<GenericParam, Comma>> for Generics {
     }
 }
 
-impl<'a> ExtractIter<'a> for &Generics {
+impl<'a> ExtractIter<'a, GenericParam> for &Generics {
     type Iter = Iter<'a, GenericParam>;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> {

@@ -13,8 +13,8 @@ pub trait ExtractValue<T> where Self: ToTokens {
     fn extract_value(&self) -> Result<T>;
 }
 
-pub trait ExtractIter<'a>
-    where Self: ToTokens, <<Self as ExtractIter<'a>>::Iter as Iterator>::Item: 'a + ToTokens
+pub trait ExtractIter<'a, T: 'a + ToTokens>
+    where Self: ToTokens, <<Self as ExtractIter<'a, T>>::Iter as Iterator>::Item: 'a + ToTokens
 {
     type Iter: Iterator;
 

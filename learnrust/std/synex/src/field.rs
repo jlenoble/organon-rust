@@ -23,7 +23,7 @@ impl Extract<TypePath> for Field {
     }
 }
 
-impl<'a> ExtractIter<'a> for &Field {
+impl<'a> ExtractIter<'a, Field> for &Field {
     type Iter = std::iter::MapWhile<
         core::slice::Iter<'a, Attribute>,
         &'a dyn Fn(&'a Attribute) -> Option<Meta>

@@ -57,7 +57,7 @@ impl Extract<Punctuated<Field, Comma>> for DeriveInput {
     }
 }
 
-impl<'a> ExtractIter<'a> for &DeriveInput {
+impl<'a> ExtractIter<'a, Field> for &DeriveInput {
     type Iter = Iter<'a, Field>;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> {

@@ -28,7 +28,7 @@ impl Extract<Field> for FieldsNamed {
     }
 }
 
-impl<'a> ExtractIter<'a> for &FieldsNamed {
+impl<'a> ExtractIter<'a, Field> for &FieldsNamed {
     type Iter = Iter<'a, Field>;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> {
