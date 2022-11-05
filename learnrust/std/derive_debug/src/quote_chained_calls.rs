@@ -25,7 +25,7 @@ fn quote_chained_call(field: &Field) -> Result<TokenStream> {
             .field(#field_name_as_string, &self.#field_name)
         })
     } else {
-        let meta = meta.unwrap();
+        let meta = meta.unwrap()?;
 
         let MetaNameValue { path, lit, eq_token: _ } = meta.extract()?;
 
