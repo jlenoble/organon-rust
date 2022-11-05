@@ -1,4 +1,13 @@
-use syn::{ Error, GenericParam, Generics, Result, punctuated::{ Iter, Punctuated }, token::Comma };
+use proc_macro2::Ident;
+use syn::{
+    Error,
+    GenericParam,
+    Generics,
+    Result,
+    TypeParam,
+    punctuated::{ Iter, Punctuated },
+    token::Comma,
+};
 
 use crate::{ PushValue, Extract, ExtractIter, ExtractMut };
 
@@ -33,6 +42,20 @@ impl Extract<GenericParam> for Generics {
         } else {
             Err(Error::new_spanned(self, "expected only one GenericParam in Generics"))
         }
+    }
+}
+
+impl Extract<TypeParam> for Generics {
+    fn extract(&self) -> Result<&TypeParam> {
+        let generic_param: &GenericParam = self.extract()?;
+        generic_param.extract()
+    }
+}
+
+impl Extract<Ident> for Generics {
+    fn extract(&self) -> Result<&Ident> {
+        let generic_param: &GenericParam = self.extract()?;
+        generic_param.extract()
     }
 }
 
