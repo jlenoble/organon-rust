@@ -50,6 +50,12 @@ impl ExtractMut<Punctuated<Field, Comma>> for Fields {
     }
 }
 
+impl Extract<Field> for Fields {
+    fn extract(&self) -> Result<&Field> {
+        FieldsNamed::extract(self.extract()?)
+    }
+}
+
 impl<'a> ExtractIter<'a> for &Fields {
     type Iter = Iter<'a, Field>;
 
