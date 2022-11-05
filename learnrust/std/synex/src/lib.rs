@@ -41,3 +41,4 @@ pub mod nested_meta;
 pub mod lit;
 
 pub mod generics;
+pub mod generic_param;
