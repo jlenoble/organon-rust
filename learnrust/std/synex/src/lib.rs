@@ -14,7 +14,7 @@ pub trait ExtractValue<T> where Self: ToTokens {
 }
 
 pub trait ExtractIter<'a, T: 'a + ToTokens>
-    where Self: ToTokens, <<Self as ExtractIter<'a, T>>::Iter as Iterator>::Item: 'a + ToTokens
+    where Self: ToTokens, <<Self as ExtractIter<'a, T>>::Iter as Iterator>::Item: 'a
 {
     type Iter: Iterator;
 

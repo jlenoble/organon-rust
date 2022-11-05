@@ -23,15 +23,15 @@ impl Extract<TypePath> for Field {
     }
 }
 
-impl<'a> ExtractIter<'a, Field> for &Field {
-    type Iter = std::iter::MapWhile<
+impl<'a> ExtractIter<'a, Meta> for &Field {
+    type Iter = std::iter::Map<
         core::slice::Iter<'a, Attribute>,
-        &'a dyn Fn(&'a Attribute) -> Option<Meta>
+        &'a dyn Fn(&'a Attribute) -> Result<Meta>
     >;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> where 'a: 'b {
         let Field { attrs, ident: _, ty: _, vis: _, colon_token: _ } = self;
 
-        Ok(attrs.iter().map_while(&(|attribute: &'b Attribute| { attribute.parse_meta().ok() })))
+        Ok(attrs.iter().map(&(|attribute: &'b Attribute| { attribute.parse_meta() })))
     }
 }
