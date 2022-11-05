@@ -1,4 +1,4 @@
-use syn::{ Field, FieldsNamed, Result, punctuated::{ Iter, Punctuated }, token::Comma };
+use syn::{ Error, Field, FieldsNamed, Result, punctuated::{ Iter, Punctuated }, token::Comma };
 
 use crate::{ PushValue, Extract, ExtractIter, ExtractMut };
 
@@ -16,11 +16,23 @@ impl ExtractMut<Punctuated<Field, Comma>> for FieldsNamed {
     }
 }
 
+impl Extract<Field> for FieldsNamed {
+    fn extract(&self) -> Result<&Field> {
+        let punct: &Punctuated<Field, Comma> = self.extract()?;
+
+        if punct.len() == 1 {
+            Ok(punct.first().unwrap())
+        } else {
+            Err(Error::new_spanned(self, "expected only one Field in FieldsNamed"))
+        }
+    }
+}
+
 impl<'a> ExtractIter<'a> for &FieldsNamed {
     type Iter = Iter<'a, Field>;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> {
-        Ok(FieldsNamed::extract(self)?.iter())
+        Ok((FieldsNamed::extract(self)? as &Punctuated<Field, Comma>).iter())
     }
 }
 
