@@ -1,4 +1,4 @@
-use syn::{ GenericParam, Generics, Result, punctuated::{ Iter, Punctuated }, token::Comma };
+use syn::{ Error, GenericParam, Generics, Result, punctuated::{ Iter, Punctuated }, token::Comma };
 
 use crate::{ PushValue, Extract, ExtractIter, ExtractMut };
 
@@ -20,7 +20,19 @@ impl<'a> ExtractIter<'a> for &Generics {
     type Iter = Iter<'a, GenericParam>;
 
     fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> {
-        Ok(Generics::extract(self)?.iter())
+        Ok((Generics::extract(self)? as &Punctuated<GenericParam, Comma>).iter())
+    }
+}
+
+impl Extract<GenericParam> for Generics {
+    fn extract(&self) -> Result<&GenericParam> {
+        let punct: &Punctuated<GenericParam, Comma> = self.extract()?;
+
+        if punct.len() == 1 {
+            Ok(punct.first().unwrap())
+        } else {
+            Err(Error::new_spanned(self, "expected only one GenericParam in Generics"))
+        }
     }
 }
 
