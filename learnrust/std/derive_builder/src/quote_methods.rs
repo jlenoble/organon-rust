@@ -31,7 +31,7 @@ fn quote_method(field: &Field) -> Result<TokenStream> {
 
         Ok(quote_eponymous_method_only(field_name, type_name))
     } else {
-        let meta = meta.unwrap();
+        let meta = meta.unwrap()?;
 
         let list: &MetaList = meta.extract()?;
         let ident: &Ident = list.extract()?;
