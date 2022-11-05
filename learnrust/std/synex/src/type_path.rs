@@ -1,5 +1,13 @@
 use proc_macro2::Ident;
-use syn::{ Path, PathSegment, Result, TypePath, punctuated::Punctuated, token::Colon2 };
+use syn::{
+    GenericArgument,
+    Path,
+    PathSegment,
+    Result,
+    TypePath,
+    punctuated::Punctuated,
+    token::{ Colon2, Comma },
+};
 
 use crate::Extract;
 
@@ -25,5 +33,19 @@ impl Extract<PathSegment> for TypePath {
 impl Extract<Ident> for TypePath {
     fn extract(&self) -> Result<&Ident> {
         Path::extract(self.extract()?)
+    }
+}
+
+impl Extract<Punctuated<GenericArgument, Comma>> for TypePath {
+    fn extract(&self) -> Result<&Punctuated<GenericArgument, Comma>> {
+        let path: &Path = self.extract()?;
+        path.extract()
+    }
+}
+
+impl Extract<GenericArgument> for TypePath {
+    fn extract(&self) -> Result<&GenericArgument> {
+        let path: &Path = self.extract()?;
+        path.extract()
     }
 }
