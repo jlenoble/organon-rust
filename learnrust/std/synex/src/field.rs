@@ -1,5 +1,16 @@
 use proc_macro2::Ident;
-use syn::{ Attribute, Error, Field, Meta, Result, Type, TypePath };
+use syn::{
+    Attribute,
+    Error,
+    Field,
+    GenericArgument,
+    Meta,
+    Result,
+    Type,
+    TypePath,
+    punctuated::Punctuated,
+    token::Comma,
+};
 
 use crate::{ Extract, ExtractIter };
 
@@ -20,6 +31,20 @@ impl Extract<TypePath> for Field {
                 Err(Error::new_spanned(self, "expected Path as Type in Field, got another Type"))
             }
         }
+    }
+}
+
+impl Extract<Punctuated<GenericArgument, Comma>> for Field {
+    fn extract(&self) -> Result<&Punctuated<GenericArgument, Comma>> {
+        let typepath: &TypePath = self.extract()?;
+        typepath.extract()
+    }
+}
+
+impl Extract<GenericArgument> for Field {
+    fn extract(&self) -> Result<&GenericArgument> {
+        let typepath: &TypePath = self.extract()?;
+        typepath.extract()
     }
 }
 
