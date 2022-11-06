@@ -1,9 +1,11 @@
+use std::collections::HashSet;
+
 use proc_macro;
 use proc_macro2::{ TokenStream, Ident };
 use quote::quote;
-use syn::{ DeriveInput, Error, parse_macro_input, Result };
+use syn::{ DeriveInput, Error, Field, Fields, parse_macro_input, Result, TypePath };
 
-use synex::{ Extract, define_add_trait_bounds };
+use synex::{ Extract, define_add_trait_bounds, ExtractIter };
 
 use crate::quote_chained_calls::quote_chained_calls;
 
@@ -26,10 +28,29 @@ fn quote_impl_debug(input: &DeriveInput) -> Result<TokenStream> {
     let struct_name: &Ident = &input.ident;
     let struct_name_as_string = struct_name.to_string();
 
-    let generics = add_trait_bounds(input.generics.clone());
+    let fields: &Fields = input.extract()?;
+    let mut phantom_data_arguments: HashSet<Ident> = HashSet::new();
+
+    for field in <&Fields as ExtractIter<'_, Field>>::extract_iter(&fields)? {
+        let field_type: &TypePath = match field.extract() {
+            Ok(typepath) => typepath,
+            Err(_) => {
+                continue;
+            }
+        };
+        let type_name: &Ident = field_type.extract()?;
+
+        if type_name == "PhantomData" {
+            for ident in <&Field as ExtractIter<'_, Ident>>::extract_iter(&field)? {
+                phantom_data_arguments.insert(ident?.clone());
+            }
+        }
+    }
+
+    let generics = add_trait_bounds(input.generics.clone(), Some(phantom_data_arguments));
     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
-    let quote_chained_calls = quote_chained_calls(input.extract()?)?;
+    let quote_chained_calls = quote_chained_calls(fields)?;
 
     Ok(
         quote! {
