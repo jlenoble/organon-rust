@@ -8,7 +8,7 @@ use syn::{
     Result,
     Type,
     TypePath,
-    punctuated::Punctuated,
+    punctuated::{ Iter, Punctuated },
     token::Comma,
 };
 
@@ -45,6 +45,39 @@ impl Extract<GenericArgument> for Field {
     fn extract(&self) -> Result<&GenericArgument> {
         let typepath: &TypePath = self.extract()?;
         typepath.extract()
+    }
+}
+
+impl<'a> ExtractIter<'a, GenericArgument> for &Field {
+    type Iter = Iter<'a, GenericArgument>;
+
+    fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> where 'a: 'b {
+        let punct: &Punctuated<GenericArgument, Comma> = self.extract()?;
+        Ok(punct.iter())
+    }
+}
+
+impl<'a> ExtractIter<'a, TypePath> for &Field {
+    type Iter = std::iter::Map<
+        Iter<'a, GenericArgument>,
+        &'a dyn Fn(&'a GenericArgument) -> Result<&'a TypePath>
+    >;
+
+    fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> where 'a: 'b {
+        let punct: &Punctuated<GenericArgument, Comma> = self.extract()?;
+        Ok(punct.iter().map(&(|generic_argument| { generic_argument.extract() })))
+    }
+}
+
+impl<'a> ExtractIter<'a, Ident> for &Field {
+    type Iter = std::iter::Map<
+        Iter<'a, GenericArgument>,
+        &'a dyn Fn(&'a GenericArgument) -> Result<&'a Ident>
+    >;
+
+    fn extract_iter<'b: 'a>(&'b self) -> Result<Self::Iter> where 'a: 'b {
+        let punct: &Punctuated<GenericArgument, Comma> = self.extract()?;
+        Ok(punct.iter().map(&(|generic_argument| { generic_argument.extract() })))
     }
 }
 
