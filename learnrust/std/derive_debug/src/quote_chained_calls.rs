@@ -1,6 +1,6 @@
 use proc_macro2::{ TokenStream, Ident };
 use quote::quote;
-use syn::{ Error, Field, Fields, Result, MetaNameValue };
+use syn::{ Error, Field, Fields, Meta, MetaNameValue, Result };
 
 use synex::{ Extract, ExtractIter, ExtractValue };
 
@@ -18,7 +18,7 @@ fn quote_chained_call(field: &Field) -> Result<TokenStream> {
     let field_name: &Ident = field.extract()?;
     let field_name_as_string = field_name.to_string();
 
-    let meta = field.extract_iter()?.next();
+    let meta = <&Field as ExtractIter<'_, Meta>>::extract_iter(&field)?.next();
 
     if meta.is_none() {
         Ok(quote! {
