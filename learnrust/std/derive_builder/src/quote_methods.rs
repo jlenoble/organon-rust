@@ -1,6 +1,6 @@
 use proc_macro2::{ TokenStream, Ident };
 use quote::{ quote, format_ident };
-use syn::{ Error, Field, Fields, Result, TypePath, MetaList, MetaNameValue };
+use syn::{ Error, Field, Fields, Meta, MetaList, MetaNameValue, Result, TypePath };
 
 use synex::{ Extract, ExtractIter, ExtractValue };
 
@@ -20,7 +20,7 @@ fn quote_method(field: &Field) -> Result<TokenStream> {
     let typepath: &TypePath = field.extract()?;
     let type_name: &Ident = typepath.extract()?;
 
-    let meta = field.extract_iter()?.next();
+    let meta = <&Field as ExtractIter<'_, Meta>>::extract_iter(&field)?.next();
 
     if meta.is_none() {
         let type_name = if type_name == "Vec" {
