@@ -1,4 +1,5 @@
 mod fields;
+mod generics;
 
 mod extract;
 mod extract_mut;
