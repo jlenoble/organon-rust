@@ -1,5 +1,3 @@
-mod fields_named;
-
 mod extract;
 mod extract_mut;
 
