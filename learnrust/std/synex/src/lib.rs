@@ -25,9 +25,8 @@ pub trait PushValue<T: ToTokens> where Self: ToTokens {
     fn push_value(&mut self, t: T) -> Result<&mut Self>;
 }
 
-pub mod derive_input;
+mod derive_input;
 
-pub mod fields;
 pub mod fields_named;
 pub mod field;
 
