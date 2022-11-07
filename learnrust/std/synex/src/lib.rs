@@ -32,5 +32,3 @@ pub mod meta_list;
 pub mod nested_meta;
 
 pub mod lit;
-
-pub mod generic_argument;
