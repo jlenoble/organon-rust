@@ -1,3 +1,1 @@
-mod path;
-
 mod extract;
