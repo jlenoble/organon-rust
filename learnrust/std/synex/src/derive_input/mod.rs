@@ -1,3 +1,8 @@
+#[cfg(feature = "testsuite")]
+mod testsuite;
+#[cfg(feature = "testsuite")]
+pub use testsuite::*;
+
 mod fields;
 mod generics;
 mod meta;

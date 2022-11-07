@@ -1,13 +1,14 @@
 [package]
-name = "synex"
+name = "synex-testsuite"
 version = "0.0.0"
 edition = "2021"
 
-[features]
-testsuite = []
+[lib]
+proc-macro = true
 
 [dependencies]
 # Procedural macros
 proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
+synex = { path = "..", features = ["testsuite"] }

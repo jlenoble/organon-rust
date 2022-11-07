@@ -1,5 +1,10 @@
 mod derive_input;
 
+#[cfg(feature = "testsuite")]
+mod testsuite;
+#[cfg(feature = "testsuite")]
+pub use testsuite::*;
+
 use quote::ToTokens;
 use syn::Result;
 

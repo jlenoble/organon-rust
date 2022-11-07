@@ -1,3 +1,4 @@
+use proc_macro2::Ident;
 use syn::{
     Data,
     DataStruct,
@@ -11,7 +12,34 @@ use syn::{
     token::Comma,
 };
 
+#[cfg(feature = "testsuite")]
+use proc_macro2::TokenStream;
+#[cfg(feature = "testsuite")]
+use quote::quote;
+
 use crate::Extract;
+
+impl Extract<Ident> for DeriveInput {
+    fn extract(&self) -> Result<&Ident> {
+        Ok(&self.ident)
+    }
+}
+
+#[cfg(feature = "testsuite")]
+pub fn quote_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
+    let input_name = derive_input.ident.to_string();
+    let ident: &Ident = derive_input.extract()?;
+    let ident = ident.to_string();
+
+    Ok(
+        quote! {
+            #[test]
+            fn can_extract_derive_input_name() {
+                assert_eq!(#ident, #input_name);
+            }
+        }
+    )
+}
 
 impl Extract<Fields> for DeriveInput {
     fn extract(&self) -> Result<&Fields> {
