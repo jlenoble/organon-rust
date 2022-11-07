@@ -1,3 +1,5 @@
+mod derive_input;
+
 use quote::ToTokens;
 use syn::Result;
 
@@ -24,7 +26,3 @@ pub trait ExtractIter<'a, T: 'a + ToTokens>
 pub trait PushValue<T: ToTokens> where Self: ToTokens {
     fn push_value(&mut self, t: T) -> Result<&mut Self>;
 }
-
-mod derive_input;
-
-pub mod lit;
