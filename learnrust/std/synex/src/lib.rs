@@ -27,6 +27,4 @@ pub trait PushValue<T: ToTokens> where Self: ToTokens {
 
 mod derive_input;
 
-pub mod nested_meta;
-
 pub mod lit;
