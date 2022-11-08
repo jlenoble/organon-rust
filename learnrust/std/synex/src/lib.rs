@@ -20,6 +20,14 @@ pub trait ExtractNth<T: ToTokens> where Self: ToTokens {
     fn extract_nth(&self, nth: usize) -> Result<&T>;
 }
 
+pub trait ExtractWhere<'a, T: 'a + ToTokens> where Self: ToTokens {
+    fn extract_where<'b: 'a>(
+        &'b self,
+        predicate: &'b dyn Fn(&'b T) -> Result<bool>
+    ) -> Result<&'b T>
+        where 'a: 'b;
+}
+
 pub trait FieldIdent where Self: ToTokens {
     fn field_ident(&self) -> Result<&Ident>;
 }

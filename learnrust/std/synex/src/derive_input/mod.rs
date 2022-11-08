@@ -9,6 +9,7 @@ mod meta;
 
 mod extract;
 mod extract_nth;
+mod extract_where;
 mod field_ident;
 
 mod extract_mut;
