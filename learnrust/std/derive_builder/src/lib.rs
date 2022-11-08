@@ -1,7 +1,7 @@
 use proc_macro;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{ parse_macro_input, DeriveInput, Error, Fields, Result };
+use syn::{ parse_macro_input, DeriveInput, Error, FieldsNamed, Result };
 
 use synex::Extract;
 
@@ -54,7 +54,7 @@ fn quote_all(input: &DeriveInput) -> TokenStream {
 }
 
 fn quote_impl_commandbuilder(input: &DeriveInput) -> Result<TokenStream> {
-    let fields: &Fields = input.extract()?;
+    let fields: &FieldsNamed = input.extract()?;
 
     let quote_fields = quote_fields(fields)?;
     let quote_methods = quote_methods(fields)?;

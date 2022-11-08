@@ -1,10 +1,10 @@
 use proc_macro2::{ TokenStream, Ident };
 use quote::{ quote, format_ident };
-use syn::{ Error, Field, Fields, Meta, MetaList, MetaNameValue, Result, TypePath };
+use syn::{ Error, Field, FieldsNamed, Meta, MetaList, MetaNameValue, Result, TypePath };
 
 use synex::{ Extract, ExtractIter, ExtractValue };
 
-pub fn quote_methods(fields: &Fields) -> Result<TokenStream> {
+pub fn quote_methods(fields: &FieldsNamed) -> Result<TokenStream> {
     let mut quote_each_method: Vec<TokenStream> = Vec::new();
 
     for field in fields.extract_iter()? {
