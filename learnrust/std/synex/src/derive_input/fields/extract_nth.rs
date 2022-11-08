@@ -1,20 +1,17 @@
-use syn::{ Field, Fields, Result, punctuated::Punctuated, token::Comma };
+use syn::{ Field, Fields, FieldsUnnamed, Result };
 
 use crate::{ Extract, ExtractNth };
 
 impl ExtractNth<Field> for Fields {
     fn extract_first(&self) -> Result<&Field> {
-        let punct: &Punctuated<Field, Comma> = self.extract()?;
-        punct.extract_first()
+        FieldsUnnamed::extract_first(self.extract()?)
     }
 
     fn extract_last(&self) -> Result<&Field> {
-        let punct: &Punctuated<Field, Comma> = self.extract()?;
-        punct.extract_last()
+        FieldsUnnamed::extract_last(self.extract()?)
     }
 
     fn extract_nth(&self, nth: usize) -> Result<&Field> {
-        let punct: &Punctuated<Field, Comma> = self.extract()?;
-        punct.extract_nth(nth)
+        FieldsUnnamed::extract_nth(self.extract()?, nth)
     }
 }

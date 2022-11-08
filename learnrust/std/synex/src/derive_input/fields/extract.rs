@@ -1,4 +1,4 @@
-use syn::{ Error, Field, Fields, FieldsNamed, Result, punctuated::Punctuated, token::Comma };
+use syn::{ Error, Fields, FieldsNamed, FieldsUnnamed, Result };
 
 use crate::Extract;
 
@@ -16,14 +16,16 @@ impl Extract<FieldsNamed> for Fields {
     }
 }
 
-impl Extract<Punctuated<Field, Comma>> for Fields {
-    fn extract(&self) -> Result<&Punctuated<Field, Comma>> {
-        FieldsNamed::extract(self.extract()?)
-    }
-}
-
-impl Extract<Field> for Fields {
-    fn extract(&self) -> Result<&Field> {
-        FieldsNamed::extract(self.extract()?)
+impl Extract<FieldsUnnamed> for Fields {
+    fn extract(&self) -> Result<&FieldsUnnamed> {
+        match self {
+            Fields::Unnamed(fieldsunnamed) => { Ok(fieldsunnamed) }
+            Fields::Named(_) => {
+                Err(Error::new_spanned(self, "expected FieldsUnnamed as Fields, got Named"))
+            }
+            Fields::Unit => {
+                Err(Error::new_spanned(self, "expected FieldsUnnamed as Fields, got Unit"))
+            }
+        }
     }
 }
