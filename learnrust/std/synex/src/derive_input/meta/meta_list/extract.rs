@@ -1,6 +1,5 @@
 use proc_macro2::Ident;
 use syn::{
-    Error,
     MetaList,
     MetaNameValue,
     NestedMeta,
@@ -33,12 +32,7 @@ impl Extract<Punctuated<NestedMeta, Comma>> for MetaList {
 impl Extract<NestedMeta> for MetaList {
     fn extract(&self) -> Result<&NestedMeta> {
         let segments: &Punctuated<NestedMeta, Comma> = self.extract()?;
-
-        if segments.len() == 1 {
-            Ok(segments.first().unwrap())
-        } else {
-            Err(Error::new_spanned(self, "expected only one NestedMeta segment in MetaList"))
-        }
+        segments.extract()
     }
 }
 

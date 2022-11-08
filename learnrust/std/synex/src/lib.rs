@@ -1,4 +1,5 @@
 mod derive_input;
+mod punctuated;
 
 #[cfg(feature = "testsuite")]
 mod testsuite;

@@ -1,5 +1,5 @@
 use proc_macro2::Ident;
-use syn::{ Error, GenericParam, Generics, Result, TypeParam, punctuated::Punctuated, token::Comma };
+use syn::{ GenericParam, Generics, Result, TypeParam, punctuated::Punctuated, token::Comma };
 
 use crate::Extract;
 
@@ -13,12 +13,7 @@ impl Extract<Punctuated<GenericParam, Comma>> for Generics {
 impl Extract<GenericParam> for Generics {
     fn extract(&self) -> Result<&GenericParam> {
         let punct: &Punctuated<GenericParam, Comma> = self.extract()?;
-
-        if punct.len() == 1 {
-            Ok(punct.first().unwrap())
-        } else {
-            Err(Error::new_spanned(self, "expected only one GenericParam in Generics"))
-        }
+        punct.extract()
     }
 }
 
