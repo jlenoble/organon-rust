@@ -8,6 +8,7 @@ mod generics;
 mod meta;
 
 mod extract;
+mod extract_nth;
 mod field_ident;
 
 mod extract_mut;

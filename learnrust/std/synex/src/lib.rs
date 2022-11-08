@@ -14,6 +14,12 @@ pub trait Extract<T: ToTokens> where Self: ToTokens {
     fn extract(&self) -> Result<&T>;
 }
 
+pub trait ExtractNth<T: ToTokens> where Self: ToTokens {
+    fn extract_first(&self) -> Result<&T>;
+    fn extract_last(&self) -> Result<&T>;
+    fn extract_nth(&self, nth: usize) -> Result<&T>;
+}
+
 pub trait FieldIdent where Self: ToTokens {
     fn field_ident(&self) -> Result<&Ident>;
 }
