@@ -5,11 +5,16 @@ mod testsuite;
 #[cfg(feature = "testsuite")]
 pub use testsuite::*;
 
+use proc_macro2::Ident;
 use quote::ToTokens;
 use syn::Result;
 
 pub trait Extract<T: ToTokens> where Self: ToTokens {
     fn extract(&self) -> Result<&T>;
+}
+
+pub trait FieldIdent where Self: ToTokens {
+    fn field_ident(&self) -> Result<&Ident>;
 }
 
 pub trait ExtractMut<T: ToTokens> where Self: ToTokens {

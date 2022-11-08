@@ -2,7 +2,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{ DeriveInput, Result };
 
-use super::extract::{ quote_ident, quote_only_one_named_field_ident };
+use super::extract::quote_ident;
+use super::field_ident::quote_only_one_named_field_ident;
 
 pub fn quote_struct_multiple_fields_tests(derive_input: &DeriveInput) -> Result<TokenStream> {
     let quote_ident = quote_ident(derive_input)?;
