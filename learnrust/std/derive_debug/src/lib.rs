@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use proc_macro;
 use proc_macro2::{ TokenStream, Ident };
 use quote::quote;
-use syn::{ DeriveInput, Error, Field, Fields, parse_macro_input, Result, TypePath };
+use syn::{ DeriveInput, Error, Field, FieldsNamed, parse_macro_input, Result, TypePath };
 
 use synex::{ Extract, define_add_trait_bounds, ExtractIter };
 
@@ -28,10 +28,10 @@ fn quote_impl_debug(input: &DeriveInput) -> Result<TokenStream> {
     let struct_name: &Ident = &input.ident;
     let struct_name_as_string = struct_name.to_string();
 
-    let fields: &Fields = input.extract()?;
+    let fields: &FieldsNamed = input.extract()?;
     let mut phantom_data_arguments: HashSet<Ident> = HashSet::new();
 
-    for field in <&Fields as ExtractIter<'_, Field>>::extract_iter(&fields)? {
+    for field in <&FieldsNamed as ExtractIter<'_, Field>>::extract_iter(&fields)? {
         let field_type: &TypePath = match field.extract() {
             Ok(typepath) => typepath,
             Err(_) => {
