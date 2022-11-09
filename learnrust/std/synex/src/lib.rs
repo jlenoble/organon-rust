@@ -8,7 +8,7 @@ pub use testsuite::*;
 
 use proc_macro2::Ident;
 use quote::ToTokens;
-use syn::Result;
+use syn::{ Field, Result };
 
 pub trait Extract<T: ToTokens> where Self: ToTokens {
     fn extract(&self) -> Result<&T>;
@@ -21,11 +21,12 @@ pub trait ExtractNth<T: ToTokens> where Self: ToTokens {
 }
 
 pub trait ExtractWhere<'a, T: 'a + ToTokens> where Self: ToTokens {
-    fn extract_where<'b: 'a>(
-        &'b self,
-        predicate: &'b dyn Fn(&'b T) -> Result<bool>
-    ) -> Result<&'b T>
+    fn extract_where<'b: 'a>(&'b self, predicate: &dyn Fn(&'b T) -> Result<bool>) -> Result<&'b T>
         where 'a: 'b;
+}
+
+pub trait FieldByName where Self: ToTokens {
+    fn field_by_name<'b>(&'b self, name: &'b str) -> Result<&'b Field>;
 }
 
 pub trait FieldIdent where Self: ToTokens {

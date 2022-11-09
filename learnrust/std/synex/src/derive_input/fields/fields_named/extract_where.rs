@@ -5,7 +5,7 @@ use crate::{ Extract, ExtractWhere };
 impl<'a> ExtractWhere<'a, Field> for FieldsNamed {
     fn extract_where<'b: 'a>(
         &'b self,
-        predicate: &'b dyn Fn(&'b Field) -> Result<bool>
+        predicate: &dyn Fn(&'b Field) -> Result<bool>
     ) -> Result<&'b Field>
         where 'a: 'b
     {

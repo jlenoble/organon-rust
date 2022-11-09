@@ -1,26 +1,20 @@
-use syn::{ DeriveInput, Field, FieldsNamed, Result, punctuated::Punctuated, token::Comma };
+use syn::{ DeriveInput, Field, FieldsNamed, Result };
 
 #[cfg(feature = "testsuite")]
 use proc_macro2::TokenStream;
 #[cfg(feature = "testsuite")]
 use quote::quote;
 
-use crate::{ Extract, ExtractWhere };
+use crate::{ Extract, FieldByName };
 
-impl<'a> ExtractWhere<'a, Field> for DeriveInput {
-    fn extract_where<'b: 'a>(
-        &'b self,
-        predicate: &dyn Fn(&'b Field) -> Result<bool>
-    ) -> Result<&'b Field>
-        where 'a: 'b
-    {
-        let punct: &Punctuated<Field, Comma> = FieldsNamed::extract(self.extract()?)?;
-        punct.extract_where(predicate)
+impl FieldByName for DeriveInput {
+    fn field_by_name<'b>(&'b self, name: &'b str) -> Result<&'b Field> {
+        FieldsNamed::field_by_name(self.extract()?, name)
     }
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_find_one_named_field(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn quote_find_field_by_name(derive_input: &DeriveInput) -> Result<TokenStream> {
     use proc_macro2::Ident;
     use syn::{ Data, DataStruct, Error, Fields };
 
@@ -50,26 +44,18 @@ pub fn quote_find_one_named_field(derive_input: &DeriveInput) -> Result<TokenStr
         );
     };
 
-    let first_binding = |field: &Field| {
-        let ident: &Ident = field.extract()?;
-        Ok(ident == first_field_name.as_str())
-    };
-    let first_field = derive_input.extract_where(&first_binding)?;
+    let first_field = derive_input.field_by_name(first_field_name.as_str())?;
     let first_ident: &Ident = first_field.extract()?;
     let first_ident = first_ident.to_string();
 
-    let last_binding = |field: &Field| {
-        let ident: &Ident = field.extract()?;
-        Ok(ident == last_field_name.as_str())
-    };
-    let last_field = derive_input.extract_where(&last_binding)?;
+    let last_field = derive_input.field_by_name(last_field_name.as_str())?;
     let last_ident: &Ident = last_field.extract()?;
     let last_ident = last_ident.to_string();
 
     Ok(
         quote! {
             #[test]
-            fn can_extract_derive_input_field_by_field_name() {
+            fn can_find_derive_input_field_by_field_name() {
                 assert_eq!(#first_ident, #first_field_name);
                 assert_eq!(#last_ident, #last_field_name);
             }
