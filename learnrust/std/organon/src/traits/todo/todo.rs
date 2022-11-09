@@ -25,7 +25,7 @@
 //! actual todos, it just depends on that other kind of context, not in the realm of intention, but in the
 //! realm of program execution.
 //!
-//! In the simplest case, a todo just goes from my brain to my screen to oblivion. It is typed, has some
+//! In the simplest case, a todo just goes from my brain to my screen to oblivion. It is typedwith a keyboard, has some
 //! representation in RAM, some representation on screen, is executed in reality, then cleared from
 //! screen and RAM , then forgotten.
 //!
@@ -33,10 +33,18 @@
 //! on screen (and its RAM counterpart) may be very complex, with lots of decorations, depending on a view context
 //! and user interactions.
 //!
-//! A more typical case is persisting todos to a text file or a database and reading them back at an ulterior time.
-//! There is always a unique Id involved, even if only a line number.
+//! A frequent case is persisting todos to a text file or a database and reading them back at an ulterior time.
+//! There is always a unique Id involved, even if only a line number, once read and decoded into RAM.
 //!
 //! See [IsActionableTodo], [HasId].
+//!
+//! Reading from a text file or a database may involve parsing a byte stream, often a utf-8 one, but not necessarily.
+//! Another (unsafe) approach is type-casting the buffered data to a known type with a given alignment. Parsing
+//! or casting involve a specific encoding, the difference being whether the decoding is done by steps or in one
+//! (risky) stroke. The encoding is known in advance or passed along.
+//!
+//! See [IsEncodedTodo], [HasParse]
+//!
 
 use crate::traits::id::HasId;
 
@@ -67,5 +75,19 @@ trait HasText {
     fn text(&self) -> &Self::Text;
 }
 
-/// Bare-bone todo in RAM, in file or in database
+/// Bare-bone todo in RAM, after decoding
 trait IsActionableTodo: IsTodo + HasId {}
+
+/// Persisted in file or in database, before decoding
+///
+/// It is not (yet?) a smart object (if direct casting is even possible) but likely to be congruent
+/// with a string or a buffer. Therefore, it does not derive from [HasContext] nor [HasText] nor [HasId].
+/// It must be parsed to an actionable todo explicitly.
+trait IsEncodedTodo: HasParse {}
+
+/// Parsing API for encoded todo
+trait HasParse {
+    type Todo: IsActionableTodo;
+
+    fn parse(&self) -> Self::Todo;
+}
