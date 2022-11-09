@@ -23,7 +23,7 @@ impl NthFieldIdent for DeriveInput {
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_one_named_field_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn test_0th_first_last_field_names(derive_input: &DeriveInput) -> Result<TokenStream> {
     use syn::{ Data, DataStruct, Error, Field, Fields };
 
     let (first_field_name, last_field_name) = if
@@ -64,17 +64,17 @@ pub fn quote_one_named_field_ident(derive_input: &DeriveInput) -> Result<TokenSt
     Ok(
         quote! {
             #[test]
-            fn can_extract_derive_input_first_field_name() {
+            fn can_extract_first_field_name() {
                 assert_eq!(#first_ident, #first_field_name);
             }
 
             #[test]
-            fn can_extract_derive_input_last_field_name() {
+            fn can_extract_last_field_name() {
                 assert_eq!(#last_ident, #last_field_name);
             }
 
             #[test]
-            fn can_extract_derive_input_0th_field_name() {
+            fn can_extract_0th_field_name() {
                 assert_eq!(#nth_0_ident, #first_field_name);
             }
         }
@@ -82,7 +82,7 @@ pub fn quote_one_named_field_ident(derive_input: &DeriveInput) -> Result<TokenSt
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_second_named_field_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn test_second_field_name(derive_input: &DeriveInput) -> Result<TokenStream> {
     use syn::{ Data, DataStruct, Error, Fields };
 
     let field_name = if
@@ -120,7 +120,7 @@ pub fn quote_second_named_field_ident(derive_input: &DeriveInput) -> Result<Toke
     Ok(
         quote! {
             #[test]
-            fn can_extract_derive_input_second_field_name() {
+            fn can_extract_second_field_name() {
                 assert_eq!(#ident, #field_name);
             }
         }

@@ -16,7 +16,7 @@ impl FieldIdent for DeriveInput {
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_only_one_named_field_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn test_single_field_name(derive_input: &DeriveInput) -> Result<TokenStream> {
     use syn::{ Data, DataStruct, Error, Fields };
 
     let field_name = if
@@ -50,7 +50,7 @@ pub fn quote_only_one_named_field_ident(derive_input: &DeriveInput) -> Result<To
     Ok(
         quote! {
             #[test]
-            fn can_extract_derive_input_only_field_name() {
+            fn can_extract_single_field_name() {
                 assert_eq!(#ident, #field_name);
             }
         }

@@ -15,7 +15,7 @@ impl Extract<Ident> for DeriveInput {
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn test_struct_name(derive_input: &DeriveInput) -> Result<TokenStream> {
     let input_name = derive_input.ident.to_string();
     let ident: &Ident = derive_input.extract()?;
     let ident = ident.to_string();
@@ -23,7 +23,7 @@ pub fn quote_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
     Ok(
         quote! {
             #[test]
-            fn can_extract_derive_input_name() {
+            fn can_extract_struct_name() {
                 assert_eq!(#ident, #input_name);
             }
         }

@@ -14,7 +14,7 @@ impl FieldByName for DeriveInput {
 }
 
 #[cfg(feature = "testsuite")]
-pub fn quote_find_field_by_name(derive_input: &DeriveInput) -> Result<TokenStream> {
+pub fn test_find_field_by_name(derive_input: &DeriveInput) -> Result<TokenStream> {
     use proc_macro2::Ident;
     use syn::{ Data, DataStruct, Error, Fields };
 
@@ -55,7 +55,7 @@ pub fn quote_find_field_by_name(derive_input: &DeriveInput) -> Result<TokenStrea
     Ok(
         quote! {
             #[test]
-            fn can_find_derive_input_field_by_field_name() {
+            fn can_find_field_by_name() {
                 assert_eq!(#first_ident, #first_field_name);
                 assert_eq!(#last_ident, #last_field_name);
             }
