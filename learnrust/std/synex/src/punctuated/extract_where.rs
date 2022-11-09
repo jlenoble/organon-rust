@@ -3,10 +3,8 @@ use syn::{ Error, Result, punctuated::Punctuated };
 
 use crate::ExtractWhere;
 
-impl<'a, T: 'a + ToTokens, P: ToTokens> ExtractWhere<'a, T> for Punctuated<T, P> {
-    fn extract_where<'b: 'a>(&'b self, predicate: &dyn Fn(&'b T) -> Result<bool>) -> Result<&'b T>
-        where 'a: 'b
-    {
+impl<T: ToTokens, P: ToTokens> ExtractWhere<T> for Punctuated<T, P> {
+    fn extract_where<'b>(&'b self, predicate: &dyn Fn(&'b T) -> Result<bool>) -> Result<&'b T> {
         if self.is_empty() {
             let type_name = std::any::type_name::<T>();
 

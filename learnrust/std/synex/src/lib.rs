@@ -20,9 +20,8 @@ pub trait ExtractNth<T: ToTokens> where Self: ToTokens {
     fn extract_nth(&self, nth: usize) -> Result<&T>;
 }
 
-pub trait ExtractWhere<'a, T: 'a + ToTokens> where Self: ToTokens {
-    fn extract_where<'b: 'a>(&'b self, predicate: &dyn Fn(&'b T) -> Result<bool>) -> Result<&'b T>
-        where 'a: 'b;
+pub trait ExtractWhere<T: ToTokens> where Self: ToTokens {
+    fn extract_where<'b>(&'b self, predicate: &dyn Fn(&'b T) -> Result<bool>) -> Result<&'b T>;
 }
 
 pub trait FieldByName where Self: ToTokens {

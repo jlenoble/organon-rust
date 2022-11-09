@@ -7,13 +7,11 @@ use quote::quote;
 
 use crate::{ Extract, ExtractWhere };
 
-impl<'a> ExtractWhere<'a, Field> for DeriveInput {
-    fn extract_where<'b: 'a>(
+impl ExtractWhere<Field> for DeriveInput {
+    fn extract_where<'b>(
         &'b self,
         predicate: &dyn Fn(&'b Field) -> Result<bool>
-    ) -> Result<&'b Field>
-        where 'a: 'b
-    {
+    ) -> Result<&'b Field> {
         let punct: &Punctuated<Field, Comma> = FieldsNamed::extract(self.extract()?)?;
         punct.extract_where(predicate)
     }
