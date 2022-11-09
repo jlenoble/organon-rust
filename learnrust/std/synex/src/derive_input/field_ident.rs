@@ -1,5 +1,5 @@
 use proc_macro2::Ident;
-use syn::{ DeriveInput, Field, Result };
+use syn::{ DeriveInput, Field, FieldsNamed, Result };
 
 #[cfg(feature = "testsuite")]
 use proc_macro2::TokenStream;
@@ -10,14 +10,14 @@ use crate::{ Extract, FieldIdent };
 
 impl FieldIdent for DeriveInput {
     fn field_ident(&self) -> Result<&Ident> {
-        let field: &Field = self.extract()?;
+        let field: &Field = FieldsNamed::extract(self.extract()?)?;
         field.extract()
     }
 }
 
 #[cfg(feature = "testsuite")]
 pub fn quote_only_one_named_field_ident(derive_input: &DeriveInput) -> Result<TokenStream> {
-    use syn::{ Data, DataStruct, Error, Fields, FieldsNamed };
+    use syn::{ Data, DataStruct, Error, Fields };
 
     let field_name = if
         let Data::Struct(DataStruct { fields: Fields::Named(FieldsNamed { ref named, .. }), .. }) =

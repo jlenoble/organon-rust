@@ -1,4 +1,4 @@
-use syn::{ DeriveInput, Field, Result, punctuated::Punctuated, token::Comma };
+use syn::{ DeriveInput, Field, FieldsNamed, Result, punctuated::Punctuated, token::Comma };
 
 #[cfg(feature = "testsuite")]
 use proc_macro2::TokenStream;
@@ -14,7 +14,7 @@ impl<'a> ExtractWhere<'a, Field> for DeriveInput {
     ) -> Result<&'b Field>
         where 'a: 'b
     {
-        let punct: &Punctuated<Field, Comma> = self.extract()?;
+        let punct: &Punctuated<Field, Comma> = FieldsNamed::extract(self.extract()?)?;
         punct.extract_where(predicate)
     }
 }
@@ -22,7 +22,7 @@ impl<'a> ExtractWhere<'a, Field> for DeriveInput {
 #[cfg(feature = "testsuite")]
 pub fn quote_find_one_named_field(derive_input: &DeriveInput) -> Result<TokenStream> {
     use proc_macro2::Ident;
-    use syn::{ Data, DataStruct, Error, Fields, FieldsNamed };
+    use syn::{ Data, DataStruct, Error, Fields };
 
     let (first_field_name, last_field_name) = if
         let Data::Struct(DataStruct { fields: Fields::Named(FieldsNamed { ref named, .. }), .. }) =

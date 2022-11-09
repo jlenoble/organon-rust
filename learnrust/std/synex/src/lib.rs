@@ -32,6 +32,12 @@ pub trait FieldIdent where Self: ToTokens {
     fn field_ident(&self) -> Result<&Ident>;
 }
 
+pub trait NthFieldIdent where Self: ToTokens {
+    fn first_field_ident(&self) -> Result<&Ident>;
+    fn last_field_ident(&self) -> Result<&Ident>;
+    fn nth_field_ident(&self, nth: usize) -> Result<&Ident>;
+}
+
 pub trait ExtractMut<T: ToTokens> where Self: ToTokens {
     fn extract_mut(&mut self) -> Result<&mut T>;
 }

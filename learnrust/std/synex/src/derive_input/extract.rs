@@ -1,16 +1,5 @@
 use proc_macro2::Ident;
-use syn::{
-    Data,
-    DataStruct,
-    Error,
-    DeriveInput,
-    Field,
-    Fields,
-    Result,
-    FieldsNamed,
-    punctuated::Punctuated,
-    token::Comma,
-};
+use syn::{ Data, DataStruct, Error, DeriveInput, Fields, FieldsNamed, FieldsUnnamed, Result };
 
 #[cfg(feature = "testsuite")]
 use proc_macro2::TokenStream;
@@ -63,14 +52,8 @@ impl Extract<FieldsNamed> for DeriveInput {
     }
 }
 
-impl Extract<Punctuated<Field, Comma>> for DeriveInput {
-    fn extract(&self) -> Result<&Punctuated<Field, Comma>> {
-        FieldsNamed::extract(DeriveInput::extract(self)?)
-    }
-}
-
-impl Extract<Field> for DeriveInput {
-    fn extract(&self) -> Result<&Field> {
-        FieldsNamed::extract(DeriveInput::extract(self)?)
+impl Extract<FieldsUnnamed> for DeriveInput {
+    fn extract(&self) -> Result<&FieldsUnnamed> {
+        Fields::extract(DeriveInput::extract(self)?)
     }
 }
