@@ -12,8 +12,7 @@ pub trait HasCollection {
 pub mod tests {
     use crate::{ AtomicUsize, err, Ordering, Result, ToOwned, Vec, vec };
     use super::super::{
-        data::{ HasData, tests::ItemData },
-        data_manager::GetData,
+        data::{ GetData, HasData, ItemData },
         id::{ HasId, IsId, ItemId },
         item::{ IsItem, tests::Item },
         item_manager::{ IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem },
@@ -31,7 +30,7 @@ pub mod tests {
     }
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    pub struct Collection {
+    pub(crate) struct Collection {
         pub id: CollectionId,
         pub items: Vec<Item>,
     }

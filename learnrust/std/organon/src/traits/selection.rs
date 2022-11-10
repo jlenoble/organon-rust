@@ -22,7 +22,7 @@ mod tests {
     use crate::{ AtomicUsize, err, HashSet, Result, Ordering, ToOwned, Vec, vec };
     use super::super::{
         collection::{ HasCollection, tests::{ Collection, CollectionId } },
-        data::tests::ItemData,
+        data::ItemData,
         id::{ HasId, IsId, ItemId },
         item::tests::Item,
         item_manager::GetItem,

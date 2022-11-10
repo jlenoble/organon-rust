@@ -1,4 +1,4 @@
-use super::{ data::HasData, id::HasId };
+use crate::traits::{ data::HasData, id::HasId };
 
 pub trait IsItem: HasId + HasData {
     fn new(data: <Self as HasData>::Data) -> Self;
@@ -7,11 +7,11 @@ pub trait IsItem: HasId + HasData {
 #[cfg(test)]
 pub mod tests {
     use crate::ToOwned;
-    use super::super::{ data::{ HasData, tests::ItemData }, id::{ HasId, IsId, ItemId } };
+    use super::super::{ data::{ HasData, ItemData }, id::{ HasId, IsId, ItemId } };
     use super::IsItem;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    pub struct Item {
+    pub(crate) struct Item {
         pub id: ItemId,
         pub data: ItemData,
     }

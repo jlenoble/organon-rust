@@ -1,7 +1,6 @@
 use crate::Result;
 use super::{
-    data::HasData,
-    data_manager::{ IsDataManager, CreateData, DeleteData, UpdateData, GetData },
+    data::{ HasData, IsDataManager, CreateData, DeleteData, UpdateData, GetData },
     id::HasId,
     item::IsItem,
 };
@@ -82,21 +81,11 @@ impl<T: GetItem> GetData for T {
 mod tests {
     use crate::{ err, HashMap, Result, ToOwned, Vec };
     use super::super::{
-        data::{ HasData, tests::ItemData },
+        data::{ CreateData, DeleteData, UpdateData, GetData, HasData, ItemData },
         id::{ HasId, ItemId },
         item::{ IsItem, tests::Item },
     };
-    use super::{
-        IsItemManager,
-        CreateItem,
-        DeleteItem,
-        UpdateItem,
-        GetItem,
-        CreateData,
-        DeleteData,
-        UpdateData,
-        GetData,
-    };
+    use super::{ IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem };
 
     struct ItemManager(HashMap<ItemId, Item>);
 
