@@ -1,4 +1,4 @@
-use super::{ id::HasId, item_manager::IsItemManager };
+use super::{ id::HasId, item::IsItemManager };
 
 pub trait IsCollection: HasId + IsItemManager {}
 
@@ -14,8 +14,7 @@ pub mod tests {
     use super::super::{
         data::{ GetData, HasData, ItemData },
         id::{ HasId, IsId, ItemId },
-        item::{ IsItem, tests::Item },
-        item_manager::{ IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem },
+        item::{ IsItem, Item, IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem },
     };
     use super::IsCollection;
 

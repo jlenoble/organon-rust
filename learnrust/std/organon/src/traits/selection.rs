@@ -24,8 +24,7 @@ mod tests {
         collection::{ HasCollection, tests::{ Collection, CollectionId } },
         data::ItemData,
         id::{ HasId, IsId, ItemId },
-        item::tests::Item,
-        item_manager::GetItem,
+        item::{ Item, GetItem },
     };
     use super::{ IsSelection, SelectItem, UnselectItem };
 
