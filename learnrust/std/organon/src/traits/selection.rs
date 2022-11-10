@@ -21,7 +21,7 @@ pub trait UnselectItem {
 mod tests {
     use crate::{ AtomicUsize, err, HashSet, Result, Ordering, ToOwned, Vec, vec };
     use super::super::{
-        collection::{ HasCollection, tests::{ Collection, CollectionId } },
+        collection::{ HasCollection, Collection, CollectionId },
         data::ItemData,
         id::{ HasId, IsId, ItemId },
         item::{ Item, GetItem },
