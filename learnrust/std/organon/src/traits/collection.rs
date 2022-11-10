@@ -14,7 +14,7 @@ pub mod tests {
     use super::super::{
         data::{ HasData, tests::ItemData },
         data_manager::GetData,
-        id::{ HasId, IsId, tests::ItemId },
+        id::{ HasId, IsId, ItemId },
         item::{ IsItem, tests::Item },
         item_manager::{ IsItemManager, CreateItem, DeleteItem, UpdateItem, GetItem },
     };

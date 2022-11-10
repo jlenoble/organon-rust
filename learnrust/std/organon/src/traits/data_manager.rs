@@ -34,7 +34,7 @@ pub trait GetData {
 #[cfg(test)]
 mod tests {
     use crate::{ err, HashMap, Result, ToOwned, Vec };
-    use super::super::{ id::{ IsId, tests::ItemId }, data::tests::ItemData };
+    use super::super::{ id::{ IsId, ItemId }, data::tests::ItemData };
     use super::{ IsDataManager, CreateData, DeleteData, UpdateData, GetData };
 
     struct DataManager(HashMap<ItemId, ItemData>);

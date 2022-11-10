@@ -23,7 +23,7 @@ mod tests {
     use super::super::{
         collection::{ HasCollection, tests::{ Collection, CollectionId } },
         data::tests::ItemData,
-        id::{ HasId, IsId, tests::ItemId },
+        id::{ HasId, IsId, ItemId },
         item::tests::Item,
         item_manager::GetItem,
     };

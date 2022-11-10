@@ -83,7 +83,7 @@ mod tests {
     use crate::{ err, HashMap, Result, ToOwned, Vec };
     use super::super::{
         data::{ HasData, tests::ItemData },
-        id::{ HasId, tests::ItemId },
+        id::{ HasId, ItemId },
         item::{ IsItem, tests::Item },
     };
     use super::{

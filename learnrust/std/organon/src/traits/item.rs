@@ -7,7 +7,7 @@ pub trait IsItem: HasId + HasData {
 #[cfg(test)]
 pub mod tests {
     use crate::ToOwned;
-    use super::super::{ data::{ HasData, tests::ItemData }, id::{ HasId, IsId, tests::ItemId } };
+    use super::super::{ data::{ HasData, tests::ItemData }, id::{ HasId, IsId, ItemId } };
     use super::IsItem;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
