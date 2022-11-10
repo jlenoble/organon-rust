@@ -43,8 +43,11 @@
 //! or casting involve a specific encoding, the difference being whether the decoding is done by steps or in one
 //! (risky) stroke. The encoding is known in advance or passed along.
 //!
-//! See [IsEncodedTodo], [HasParse]
+//! See [IsEncodedTodo], [HasParse].
 //!
+//! Parsed todos end up in an in-memory store as actionable todos.
+//!
+//! See [HasEncode].
 
 use crate::traits::id::HasId;
 
@@ -76,7 +79,16 @@ trait HasText {
 }
 
 /// Bare-bone todo in RAM, after decoding
-trait IsActionableTodo: IsTodo + HasId {}
+///
+/// It may be encoded for persistent storage.
+trait IsActionableTodo: IsTodo + HasId + HasEncode {}
+
+/// Encoding API for actionable (i.e. in-memory, or "stored") todo
+trait HasEncode {
+    type Todo: IsEncodedTodo;
+
+    fn encode(&self) -> Self::Todo;
+}
 
 /// Persisted in file or in database, before decoding
 ///
