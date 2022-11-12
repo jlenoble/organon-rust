@@ -1,12 +1,15 @@
 use crate::{
     Add,
     Sub,
-    traits::{ num::IsNum, saturating::{ IsSaturating, IsSaturatingAdd, IsSaturatingSub } },
+    traits::{
+        num::IsNum,
+        saturating::{ IsSaturating, IsSaturatingAdd, IsSaturatingSub },
+        size::IsSize,
+    },
 };
-use super::IsSize;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(crate) struct Size(pub u16);
+pub(crate) struct Size(pub usize);
 
 impl IsSize for Size {}
 impl IsNum for Size {}

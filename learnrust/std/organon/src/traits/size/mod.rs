@@ -1,10 +1,9 @@
+//! Size
+//!
+//! A size type should at least have the same behaviour as usize.
+
 mod size;
 pub use size::*;
 
 #[cfg(test)]
-mod test_impls;
-#[cfg(test)]
-pub(crate) use test_impls::*;
-
-#[cfg(test)]
-mod tests;
+mod test;
