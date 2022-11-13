@@ -15,6 +15,6 @@ fn main() {
         process::exit(0);
     }
 
-    let global_context = Context::new();
-    Context::set_context(&global_context);
+    let mut global_context = Context::new();
+    global_context.initialize(&args);
 }
