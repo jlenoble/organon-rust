@@ -8,6 +8,7 @@ members = [
     "learnrust/std/organon",
     "learnrust/std/synex",
     "learnrust/std/synex/testsuite",
+    "learnrust/std/tw",
     "learnrust/std/webserver",
 ]
 exclude = ["learnrust/no_std/rustos"]

@@ -1,0 +1,5 @@
+[package]
+name = "tw"
+version = "0.0.0"
+edition = "2021"
+description = "a port of taskwarrior from C++"
