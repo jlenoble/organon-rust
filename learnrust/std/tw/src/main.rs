@@ -3,6 +3,7 @@
 //! See https://github.com/GothenburgBitFactory/taskwarrior for the original code, MIT Licensed.
 
 use std::{ env, process };
+use tw::Context;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -13,4 +14,7 @@ fn main() {
         println!("{}", VERSION);
         process::exit(0);
     }
+
+    let global_context = Context::new();
+    Context::set_context(&global_context);
 }
