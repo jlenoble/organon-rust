@@ -1,7 +1,8 @@
-pub type Result = std::result::Result<(), TWError>;
+pub type Result<T> = std::result::Result<T, TWError>;
 
 pub enum TWError {
     MissingEnvVariable(&'static str),
+    FailedToExpandPath(&'static str),
 }
 
 impl std::fmt::Display for TWError {
@@ -10,6 +11,7 @@ impl std::fmt::Display for TWError {
             TWError::MissingEnvVariable(var) => {
                 write!(f, "Environment variable `{}` is undefined", var)
             }
+            TWError::FailedToExpandPath(path) => { write!(f, "Failed to expand path `{}`", path) }
         }
     }
 }

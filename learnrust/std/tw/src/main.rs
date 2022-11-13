@@ -5,7 +5,7 @@
 use std::{ env, process };
 use tw::{ Context, Result };
 
-fn main() -> Result {
+fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
     const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -15,7 +15,7 @@ fn main() -> Result {
         process::exit(0);
     }
 
-    let mut global_context = Context::new();
+    let mut global_context = Context::new()?;
     global_context.initialize(&args)?;
 
     Ok(())

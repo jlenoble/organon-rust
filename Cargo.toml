@@ -17,6 +17,7 @@ exclude = ["learnrust/no_std/rustos"]
 color-eyre = "0.6.2"
 proc-macro2 = "1.0.47"
 quote = "1.0.21"
+shellexpand = "2.1.2"
 syn = "1.0.103"
 thiserror = "1.0.37"
 trybuild = "1.0.71"
