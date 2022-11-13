@@ -3,9 +3,9 @@
 //! See https://github.com/GothenburgBitFactory/taskwarrior for the original code, MIT Licensed.
 
 use std::{ env, process };
-use tw::Context;
+use tw::{ Context, Result };
 
-fn main() {
+fn main() -> Result {
     let args: Vec<String> = env::args().collect();
     const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -16,5 +16,7 @@ fn main() {
     }
 
     let mut global_context = Context::new();
-    global_context.initialize(&args);
+    global_context.initialize(&args)?;
+
+    Ok(())
 }
