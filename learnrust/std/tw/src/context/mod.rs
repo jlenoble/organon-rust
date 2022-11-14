@@ -1,6 +1,9 @@
+mod configuration_defaults;
 mod initialize;
 
 use crate::{ File, Result, Timer };
+
+pub use configuration_defaults::CONFIGURATION_DEFAULTS;
 
 pub struct Context {
     home_dir: String,
