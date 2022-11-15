@@ -3,6 +3,7 @@ pub type Result<T> = std::result::Result<T, TWError>;
 pub enum TWError {
     MissingEnvVariable(String),
     FailedToExpandPath(String),
+    BadConfigEntry(String),
 }
 
 impl std::fmt::Display for TWError {
@@ -12,6 +13,9 @@ impl std::fmt::Display for TWError {
                 write!(f, "Environment variable `{}` is undefined", var)
             }
             TWError::FailedToExpandPath(path) => { write!(f, "Failed to expand path `{}`", path) }
+            TWError::BadConfigEntry(entry) => {
+                write!(f, "Malformed entry `{}` in config file", entry)
+            }
         }
     }
 }

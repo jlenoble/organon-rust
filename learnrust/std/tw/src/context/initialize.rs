@@ -1,6 +1,6 @@
 use std::env;
 use crate::{ AsPath, CLI2, File, Result, TWError };
-use super::Context;
+use super::{ CONFIGURATION_DEFAULTS, Context };
 
 impl Context {
     pub fn initialize(&mut self, args: &Vec<String>) -> Result<()> {
@@ -51,6 +51,8 @@ impl Context {
             taskrc_overridden = true;
             self.rc_file = file;
         }
+
+        self.config.parse(CONFIGURATION_DEFAULTS)?;
 
         Ok(())
     }
