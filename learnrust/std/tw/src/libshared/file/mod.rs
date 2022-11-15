@@ -1,4 +1,5 @@
-use crate::{ AsPath, AsPathMut, Path, Result };
+use std::fs;
+use crate::{ AsPath, AsPathMut, Path, Result, TWError };
 
 pub struct File {
     path: Path,
@@ -7,6 +8,10 @@ pub struct File {
 impl AsPath for File {
     fn as_path(&self) -> &Path {
         &self.path
+    }
+
+    fn as_str(&self) -> &str {
+        self.path.as_str()
     }
 }
 
@@ -21,5 +26,13 @@ impl File {
         Ok(Self {
             path: Path::new(path)?,
         })
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Opens if necessary.
+    pub fn read(&self) -> Result<String> {
+        fs::read_to_string(self.path.as_str()).or(
+            Err(TWError::FailedToReadFile(self.path.as_str().to_owned()))
+        )
     }
 }

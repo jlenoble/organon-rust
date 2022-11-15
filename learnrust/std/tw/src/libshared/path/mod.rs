@@ -1,3 +1,4 @@
+use permissions;
 use shellexpand;
 use crate::{ Result, TWError };
 
@@ -8,6 +9,7 @@ pub struct Path {
 
 pub trait AsPath {
     fn as_path(&self) -> &Path;
+    fn as_str(&self) -> &str;
 }
 
 pub trait AsPathMut {
@@ -29,7 +31,20 @@ impl Path {
         })
     }
 
+    pub fn as_str(&self) -> &str {
+        self._data.as_str()
+    }
+
     pub fn exists(&self) -> bool {
         std::path::Path::new(&self._data).exists()
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // EACCES is a permissions problem which is exactly what this method is trying
+    // to determine.
+    pub fn readable(&self) -> Result<bool> {
+        permissions
+            ::is_readable(self.as_str())
+            .or(Err(TWError::FailedToReadFile(self.as_str().to_owned())))
     }
 }

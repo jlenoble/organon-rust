@@ -5,4 +5,5 @@ edition = "2021"
 description = "a port of taskwarrior from C++"
 
 [dependencies]
+permissions = { workspace = true }
 shellexpand = { workspace = true }

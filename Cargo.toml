@@ -15,6 +15,7 @@ exclude = ["learnrust/no_std/rustos"]
 
 [workspace.dependencies]
 color-eyre = "0.6.2"
+permissions = "0.3.0"
 proc-macro2 = "1.0.47"
 quote = "1.0.21"
 shellexpand = "2.1.2"
