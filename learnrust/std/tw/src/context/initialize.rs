@@ -53,6 +53,7 @@ impl Context {
         }
 
         self.config.parse(CONFIGURATION_DEFAULTS)?;
+        self.config.load(&self.rc_file.as_str().to_owned())?;
 
         Ok(())
     }

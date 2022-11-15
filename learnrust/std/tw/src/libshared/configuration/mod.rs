@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ json, Result, TWError };
+use crate::{ AsPath, File, json, Result, TWError };
 
 pub struct Configuration {
     _hash_map: HashMap<String, String>,
@@ -53,6 +53,22 @@ impl Configuration {
         }
 
         self._dirty = true;
+
+        Ok(())
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Read the Configuration file and populate the *this map.  The file format is
+    // simply lines with name=value pairs.  Whitespace between name, = and value is
+    // not tolerated, but blank lines and comments starting with # are allowed.
+    pub fn load(&mut self, file_path: &String) -> Result<()> {
+        // Read the file, then parse the contents.
+        let config = File::new(file_path)?;
+
+        if config.as_path().exists() && config.as_path().readable()? {
+            let contents = config.read()?;
+            self.parse(contents.as_str())?;
+        }
 
         Ok(())
     }
