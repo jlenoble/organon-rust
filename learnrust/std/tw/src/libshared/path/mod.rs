@@ -15,11 +15,11 @@ pub trait AsPathMut {
 }
 
 impl Path {
-    pub fn new(path: &'static str) -> Result<Self> {
+    pub fn new(path: &str) -> Result<Self> {
         let data = match shellexpand::full(path) {
             Ok(data) => data,
             Err(_) => {
-                return Err(TWError::FailedToExpandPath(path));
+                return Err(TWError::FailedToExpandPath(path.to_owned()));
             }
         };
 

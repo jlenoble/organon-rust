@@ -1,8 +1,8 @@
 pub type Result<T> = std::result::Result<T, TWError>;
 
 pub enum TWError {
-    MissingEnvVariable(&'static str),
-    FailedToExpandPath(&'static str),
+    MissingEnvVariable(String),
+    FailedToExpandPath(String),
 }
 
 impl std::fmt::Display for TWError {
