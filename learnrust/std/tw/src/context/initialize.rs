@@ -1,9 +1,9 @@
 use std::env;
-use crate::{ AsPath, File, Result, TWError };
+use crate::{ AsPath, CLI2, File, Result, TWError };
 use super::Context;
 
 impl Context {
-    pub fn initialize(&mut self, _args: &Vec<String>) -> Result<()> {
+    pub fn initialize(&mut self, args: &Vec<String>) -> Result<()> {
         self.timer_total.start();
 
         self.home_dir = match env::var("HOME") {
@@ -12,6 +12,8 @@ impl Context {
                 return Err(TWError::MissingEnvVariable("HOME".into()));
             }
         };
+
+        let mut taskrc_overridden = false;
 
         // XDG_CONFIG_HOME doesn't count as an override (no warning header)
         if !self.rc_file.as_path().exists() {
@@ -36,6 +38,18 @@ impl Context {
             if maybe_rc_file.as_path().exists() {
                 self.rc_file = maybe_rc_file;
             }
+        }
+
+        let override_path = env::var("TASKRC").unwrap_or("".into());
+
+        if !override_path.is_empty() {
+            self.rc_file = File::new(override_path.as_str())?;
+            taskrc_overridden = true;
+        }
+
+        if let Some(file) = CLI2::get_override(args)? {
+            taskrc_overridden = true;
+            self.rc_file = file;
         }
 
         Ok(())
