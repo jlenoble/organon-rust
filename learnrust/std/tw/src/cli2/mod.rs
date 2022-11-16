@@ -1,4 +1,4 @@
-use crate::{ File, Result };
+use crate::{ Context, File, Result };
 
 pub struct CLI2 {}
 
@@ -9,6 +9,25 @@ impl CLI2 {
             return Ok(None);
         }
         Ok(Some(File::new(value.as_str())?))
+    }
+
+    pub fn apply_overrides(args: &Vec<String>, context: &mut Context) {
+        for raw in args.iter() {
+            if raw == "--" {
+                break;
+            }
+            if &raw[0..3] != "rc." {
+                continue;
+            }
+            let pos = if let Some(pos) = raw.find(&[':', '=']) {
+                pos
+            } else {
+                continue;
+            };
+            let name = &raw[3..pos];
+            let value = &raw[pos + 1..];
+            context.config_set(name.to_owned(), value.to_owned());
+        }
     }
 
     pub fn get_value(args: &Vec<String>, arg: String) -> String {

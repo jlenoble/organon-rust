@@ -1,5 +1,5 @@
 use std::env;
-use crate::{ AsPath, CLI2, File, Result, TWError };
+use crate::{ AsPath, CLI2, File, Result, Timer, TWError };
 use super::{ CONFIGURATION_DEFAULTS, Context };
 
 impl Context {
@@ -12,6 +12,19 @@ impl Context {
                 return Err(TWError::MissingEnvVariable("HOME".into()));
             }
         };
+
+        ////////////////////////////////////////////////////////////////////////////
+        //
+        // [1] Load the correct config file.
+        //     - Default to ~/.taskrc (ctor).
+        //     - If no ~/.taskrc, use $XDG_CONFIG_HOME/task/taskrc if exists, or
+        //       ~/.config/task/taskrc if $XDG_CONFIG_HOME is unset
+        //     - Allow $TASKRC override.
+        //     - Allow command line override rc:<file>
+        //     - Load resultant file.
+        //     - Apply command line overrides to the config.
+        //
+        ////////////////////////////////////////////////////////////////////////////
 
         let mut taskrc_overridden = false;
 
@@ -52,8 +65,18 @@ impl Context {
             self.rc_file = file;
         }
 
-        self.config.parse(CONFIGURATION_DEFAULTS)?;
-        self.config.load(&self.rc_file.as_str().to_owned())?;
+        {
+            let timer = Timer::new();
+            self.config.parse(CONFIGURATION_DEFAULTS)?;
+            self.config.load(&self.rc_file.as_str().to_owned())?;
+            Self::debug_timing(&format!("Config::load ({})", self.rc_file.as_str()), &timer);
+        }
+
+        CLI2::apply_overrides(args, self);
+
+        if taskrc_overridden && self.verbose("override") {
+            self.header(&format!("TASKRC override: {}", self.rc_file.as_str()));
+        }
 
         Ok(())
     }

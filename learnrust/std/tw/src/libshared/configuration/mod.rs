@@ -72,4 +72,55 @@ impl Configuration {
 
         Ok(())
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Return the configuration value given the specified key.
+    pub fn get(&self, key: &str, get_context_from: Option<bool>) -> String {
+        let get_context_from = get_context_from.unwrap_or(false);
+
+        let mut ckey = key.to_owned();
+
+        if get_context_from {
+            if let Some(ctx_value) = self.as_hash_map().get("context") {
+                if let Some(pos) = key.rfind("context.") {
+                    if pos > 0 {
+                        ckey.clear();
+                        ckey.push_str("context.");
+                        ckey.push_str(ctx_value);
+                        ckey.push_str(".rc.");
+                        ckey.push_str(key);
+                    }
+                }
+            }
+        }
+
+        if let Some(found) = self.as_hash_map().get(&ckey) {
+            return found.into();
+        }
+
+        // Fallback - use global config value
+        if let Some(found) = self.as_hash_map().get(key.into()) {
+            return found.into();
+        }
+
+        return "".into();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    pub fn get_boolean(&self, key: &str, get_context_from: Option<bool>) -> bool {
+        let val = self.get(key, get_context_from);
+        if !val.is_empty() {
+            let value = val.to_lowercase();
+            if value == "true" || value == "1" || value == "y" || value == "yes" || value == "on" {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    pub fn set(&mut self, key: String, value: String) {
+        self.as_hash_map_mut().insert(key, value);
+        self._dirty = true;
+    }
 }

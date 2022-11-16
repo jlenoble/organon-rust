@@ -1,5 +1,8 @@
 mod configuration_defaults;
 mod initialize;
+mod verbose;
+
+use std::collections::HashSet;
 
 use crate::{ Configuration, File, Result, Timer };
 
@@ -11,6 +14,9 @@ pub struct Context {
     config: Configuration,
 
     timer_total: Timer,
+    verbosity_legacy: bool,
+    verbosity: HashSet<String>,
+    headers: Vec<String>,
 }
 
 impl Context {
@@ -21,6 +27,13 @@ impl Context {
             config: Configuration::new(),
 
             timer_total: Timer::new(),
+            verbosity_legacy: false,
+            verbosity: HashSet::new(),
+            headers: vec![],
         })
+    }
+
+    pub fn config_set(&mut self, key: String, value: String) {
+        self.config.set(key, value);
     }
 }
