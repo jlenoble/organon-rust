@@ -1,4 +1,3 @@
-mod cli2;
 mod configuration;
 mod file;
 pub mod json;
@@ -6,7 +5,6 @@ mod path;
 mod timer;
 mod utf8;
 
-pub use cli2::CLI2;
 pub use configuration::Configuration;
 pub use file::File;
 pub use path::{ Path, AsPath, AsPathMut };
