@@ -12,7 +12,7 @@ impl Timer {
         Self {
             _start: now,
             _end: now,
-            _running: false,
+            _running: true,
         }
     }
 
