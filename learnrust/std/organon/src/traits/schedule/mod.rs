@@ -52,7 +52,11 @@ pub trait HasCompletionTime {
     fn completion_time(&self) -> Instant;
 }
 
-pub trait IsLoggable: IsRunnable + HasTurnaroundTime + HasWaitingTime + HasBurstTime {}
+pub trait IsLoggable: IsRunnable +
+    HasTurnaroundTime +
+    HasWaitingTime +
+    HasBurstTime +
+    HasResponseTime {}
 
 pub trait HasTurnaroundTime {
     fn turnaround_time(&self) -> Duration;
@@ -64,4 +68,8 @@ pub trait HasWaitingTime {
 
 pub trait HasBurstTime {
     fn burst_time(&self) -> Duration;
+}
+
+pub trait HasResponseTime {
+    fn response_time(&self) -> Duration;
 }
