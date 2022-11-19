@@ -5,12 +5,22 @@ use crate::{ Result, TaskError };
 #[derive(Debug, PartialEq)]
 pub struct Task {
     depends: Vec<Uuid>,
+    description: String,
 }
 
 impl Task {
     pub fn new() -> Self {
         Self {
             depends: vec![],
+            description: String::new(),
+        }
+    }
+
+    pub fn unquote(value: &str) -> Result<&str> {
+        if value.as_bytes()[0] == b'"' && value.as_bytes()[value.as_bytes().len() - 1] == b'"' {
+            Ok(&value[1..value.len() - 1])
+        } else {
+            Err(TaskError::UnquotedString(value.to_owned()))
         }
     }
 }
@@ -21,20 +31,16 @@ impl Task {
     }
 
     pub fn set_depends(&mut self, value: &str) -> Result<()> {
+        let value = Self::unquote(value)?;
+
         self.depends.clear();
 
-        if value.as_bytes()[0] == b'"' && value.as_bytes()[value.as_bytes().len() - 1] == b'"' {
-            let value = &value[1..value.len() - 1];
+        for dep in value.split(',') {
+            let uuid = Uuid::parse_str(dep).or_else(|err|
+                Err(TaskError::BadUuid(dep.to_owned(), err))
+            )?;
 
-            for dep in value.split(',') {
-                let uuid = Uuid::parse_str(dep).or_else(|err|
-                    Err(TaskError::BadUuid(dep.to_owned(), err))
-                )?;
-
-                self.depends.push(uuid);
-            }
-        } else {
-            return Err(TaskError::UnquotedString(value.to_owned()));
+            self.depends.push(uuid);
         }
 
         Ok(())
