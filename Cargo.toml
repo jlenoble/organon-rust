@@ -8,6 +8,7 @@ members = [
     "learnrust/std/organon",
     "learnrust/std/synex",
     "learnrust/std/synex/testsuite",
+    "learnrust/std/task",
     "learnrust/std/tw",
     "learnrust/std/webserver",
 ]
@@ -22,3 +23,4 @@ shellexpand = "2.1.2"
 syn = "1.0.103"
 thiserror = "1.0.37"
 trybuild = "1.0.71"
+uuid = "1.2.2"
