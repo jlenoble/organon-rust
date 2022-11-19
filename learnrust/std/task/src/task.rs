@@ -83,3 +83,28 @@ fn can_set_depends_property() {
         ]
     );
 }
+
+impl Task {
+    pub fn get_description(&self) -> &String {
+        &self.description
+    }
+
+    pub fn set_description(&mut self, value: &str) -> Result<()> {
+        let value = Self::unquote(value)?;
+
+        self.description.clear();
+        self.description.push_str(value);
+
+        Ok(())
+    }
+}
+
+#[test]
+fn can_set_description_property() {
+    let mut task = Task::new();
+
+    assert!(task.set_description("unquoted string").is_err());
+
+    assert!(task.set_description("\"quoted string\"").is_ok());
+    assert_eq!(*task.get_description(), "quoted string");
+}
