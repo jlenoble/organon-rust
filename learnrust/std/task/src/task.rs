@@ -45,6 +45,7 @@ pub struct Task {
     due: Option<DateTime<Utc>>,
     entry: DateTime<Utc>,
     mask: Vec<Mask>,
+    modified: Option<DateTime<Utc>>,
 }
 
 impl Task {
@@ -55,6 +56,7 @@ impl Task {
             due: None,
             entry: Utc::now(),
             mask: vec![],
+            modified: None,
         }
     }
 }
@@ -291,4 +293,36 @@ fn can_set_mask_property() {
     assert!(task.set_mask("+XXX++WXWW--XW!").is_err());
     assert!(task.set_mask("+XXX++W!WW--XW").is_err());
     assert!(task.set_mask("!+XXX++WXWW--XW").is_err());
+}
+
+impl Task {
+    pub fn get_modified(&self) -> Option<DateTime<Utc>> {
+        self.modified
+    }
+
+    pub fn set_modified(&mut self, value: &str) -> Result<()> {
+        if let Ok(timestamp) = value.parse::<i64>() {
+            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
+                self.modified = Some(DateTime::from_utc(naive, Utc));
+                return Ok(());
+            }
+        }
+
+        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+    }
+}
+
+#[test]
+fn can_set_modified_property() {
+    use chrono::{ FixedOffset, TimeZone };
+
+    let mut task = Task::new();
+
+    assert!(task.set_modified("bad date").is_err());
+
+    assert!(task.set_modified("1669028400").is_ok());
+    assert_eq!(
+        task.get_modified().unwrap(),
+        FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
+    )
 }

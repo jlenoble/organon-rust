@@ -33,6 +33,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "mask" => {
                     task.set_mask(value)?;
                 }
+                "modified" => {
+                    task.set_modified(value)?;
+                }
                 _ => {
                     return Err(TaskError::UnknownKey(key.to_owned()));
                 }
