@@ -59,6 +59,16 @@ impl Task {
             modified: None,
         }
     }
+
+    fn parse_datetime(value: &str) -> Result<DateTime<Utc>> {
+        if let Ok(timestamp) = value.parse::<i64>() {
+            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
+                return Ok(DateTime::from_utc(naive, Utc));
+            }
+        }
+
+        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+    }
 }
 
 impl Task {
@@ -148,14 +158,8 @@ impl Task {
     }
 
     pub fn set_due(&mut self, value: &str) -> Result<()> {
-        if let Ok(timestamp) = value.parse::<i64>() {
-            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
-                self.due = Some(DateTime::from_utc(naive, Utc));
-                return Ok(());
-            }
-        }
-
-        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+        self.due = Some(Self::parse_datetime(value)?);
+        Ok(())
     }
 }
 
@@ -180,14 +184,8 @@ impl Task {
     }
 
     pub fn set_entry(&mut self, value: &str) -> Result<()> {
-        if let Ok(timestamp) = value.parse::<i64>() {
-            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
-                self.entry = DateTime::from_utc(naive, Utc);
-                return Ok(());
-            }
-        }
-
-        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+        self.entry = Self::parse_datetime(value)?;
+        Ok(())
     }
 }
 
@@ -301,14 +299,8 @@ impl Task {
     }
 
     pub fn set_modified(&mut self, value: &str) -> Result<()> {
-        if let Ok(timestamp) = value.parse::<i64>() {
-            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
-                self.modified = Some(DateTime::from_utc(naive, Utc));
-                return Ok(());
-            }
-        }
-
-        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+        self.modified = Some(Self::parse_datetime(value)?);
+        Ok(())
     }
 }
 
