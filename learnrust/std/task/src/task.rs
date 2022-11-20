@@ -1,3 +1,5 @@
+use chrono::{ DateTime, NaiveDateTime, Utc };
+
 use uuid::Uuid;
 
 use crate::{ Result, TaskError };
@@ -6,6 +8,7 @@ use crate::{ Result, TaskError };
 pub struct Task {
     depends: Vec<Uuid>,
     description: String,
+    due: Option<DateTime<Utc>>,
 }
 
 impl Task {
@@ -13,6 +16,7 @@ impl Task {
         Self {
             depends: vec![],
             description: String::new(),
+            due: None,
         }
     }
 }
@@ -96,4 +100,36 @@ fn can_set_description_property() {
 
     assert!(task.set_description("\"quoted string\"").is_ok());
     assert_eq!(*task.get_description(), "\"quoted string\"");
+}
+
+impl Task {
+    pub fn get_due(&self) -> Option<DateTime<Utc>> {
+        self.due
+    }
+
+    pub fn set_due(&mut self, value: &str) -> Result<()> {
+        if let Ok(timestamp) = value.parse::<i64>() {
+            if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
+                self.due = Some(DateTime::from_utc(naive, Utc));
+                return Ok(());
+            }
+        }
+
+        Err(TaskError::FailedToParseDateTime(value.to_owned()))
+    }
+}
+
+#[test]
+fn can_set_due_property() {
+    use chrono::{ FixedOffset, TimeZone };
+
+    let mut task = Task::new();
+
+    assert!(task.set_due("bad date").is_err());
+
+    assert!(task.set_due("1669028400").is_ok());
+    assert_eq!(
+        task.get_due().unwrap(),
+        FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
+    )
 }

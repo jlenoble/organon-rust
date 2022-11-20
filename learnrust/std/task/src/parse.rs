@@ -24,6 +24,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "description" => {
                     task.set_description(value)?;
                 }
+                "due" => {
+                    task.set_due(value)?;
+                }
                 _ => {
                     return Err(TaskError::UnknownKey(key.to_owned()));
                 }

@@ -15,6 +15,7 @@ pub enum TaskError {
     UnquotedString(String),
     CharacterNotFound(String, char),
     EntryAlreadyParsed(String),
+    FailedToParseDateTime(String),
 }
 
 impl std::fmt::Display for TaskError {
@@ -37,6 +38,7 @@ impl std::fmt::Display for TaskError {
                 write!(f, "Character `{}` not found in `{}`", ch, s),
             TaskError::EntryAlreadyParsed(entry) =>
                 write!(f, "Entry `{}` is already parsed", entry),
+            TaskError::FailedToParseDateTime(dt) => write!(f, "Failed to parse DateTime `{}`", dt),
         }
     }
 }
