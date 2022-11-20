@@ -14,6 +14,7 @@ pub struct Task {
     depends: Vec<Uuid>,
     description: String,
     due: Option<DateTime<Utc>>,
+    end: Option<DateTime<Utc>>,
     entry: DateTime<Utc>,
     imask: f64,
     mask: Vec<Mask>,
@@ -35,6 +36,7 @@ impl Task {
             depends: vec![],
             description: String::new(),
             due: None,
+            end: None,
             entry: Utc::now(),
             imask: f64::NAN,
             mask: vec![],
@@ -119,6 +121,17 @@ impl Task {
 
     pub fn set_due(&mut self, value: &str) -> Result<()> {
         self.due = Some(Self::parse_datetime(value)?);
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_end(&self) -> Option<DateTime<Utc>> {
+        self.end
+    }
+
+    pub fn set_end(&mut self, value: &str) -> Result<()> {
+        self.end = Some(Self::parse_datetime(value)?);
         Ok(())
     }
 }

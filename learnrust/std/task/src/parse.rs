@@ -27,6 +27,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "due" => {
                     task.set_due(value)?;
                 }
+                "end" => {
+                    task.set_end(value)?;
+                }
                 "entry" => {
                     task.set_entry(value)?;
                 }

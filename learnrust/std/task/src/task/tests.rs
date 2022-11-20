@@ -102,6 +102,22 @@ fn can_set_due_property() {
 }
 
 #[test]
+fn can_set_end_property() {
+    use chrono::{ FixedOffset, TimeZone };
+    use crate::Task;
+
+    let mut task = Task::new();
+
+    assert!(task.set_end("bad date").is_err());
+
+    assert!(task.set_end("1669028400").is_ok());
+    assert_eq!(
+        task.get_end().unwrap(),
+        FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
+    )
+}
+
+#[test]
 fn can_set_entry_property() {
     use chrono::{ FixedOffset, TimeZone };
     use crate::Task;
