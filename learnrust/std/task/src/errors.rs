@@ -18,6 +18,7 @@ pub enum TaskError {
     FailedToParseDateTime(String),
     FailedToParseMask(String),
     EmptyString,
+    FailedToParseRecur(String),
 }
 
 impl std::fmt::Display for TaskError {
@@ -44,6 +45,8 @@ impl std::fmt::Display for TaskError {
             TaskError::FailedToParseMask(mask) =>
                 write!(f, "Failed to parse recurrence mask `{}`", mask),
             TaskError::EmptyString => write!(f, "String value should not be empty"),
+            TaskError::FailedToParseRecur(recur) =>
+                write!(f, "Failed to parse recurrence periodicity `{}`", recur),
         }
     }
 }

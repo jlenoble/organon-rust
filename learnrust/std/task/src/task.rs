@@ -2,7 +2,7 @@ use chrono::{ DateTime, NaiveDateTime, Utc };
 
 use uuid::Uuid;
 
-use crate::{ Mask, Result, TaskError };
+use crate::{ Mask, Recur, Result, TaskError };
 
 #[derive(Debug, PartialEq)]
 pub struct Task {
@@ -13,6 +13,7 @@ pub struct Task {
     mask: Vec<Mask>,
     modified: Option<DateTime<Utc>>,
     project: String,
+    recur: Recur,
 }
 
 impl Task {
@@ -25,6 +26,7 @@ impl Task {
             mask: vec![],
             modified: None,
             project: String::new(),
+            recur: Recur::NotSet,
         }
     }
 
@@ -308,4 +310,41 @@ fn can_set_project_property() {
 
     assert!(task.set_project("\"quoted string\"").is_ok());
     assert_eq!(*task.get_project(), "\"quoted string\"");
+}
+
+impl Task {
+    pub fn get_recur(&self) -> Recur {
+        self.recur
+    }
+
+    pub fn set_recur(&mut self, value: &str) -> Result<()> {
+        let rec: Recur = value.to_owned().into();
+
+        if rec == Recur::Unknown {
+            return Err(TaskError::FailedToParseRecur(value.to_owned()));
+        }
+
+        self.recur = rec;
+
+        Ok(())
+    }
+}
+
+#[test]
+fn can_set_recur_property() {
+    let mut task = Task::new();
+
+    assert!(task.set_recur("").is_ok());
+    assert_eq!(task.get_recur(), Recur::NotSet);
+
+    assert!(task.set_recur("daily").is_ok());
+    assert_eq!(task.get_recur(), Recur::Daily);
+
+    assert!(task.set_recur("weekly").is_ok());
+    assert_eq!(task.get_recur(), Recur::Weekly);
+
+    assert!(task.set_recur("monthly").is_ok());
+    assert_eq!(task.get_recur(), Recur::Monthly);
+
+    assert!(task.set_recur("foo").is_err());
 }

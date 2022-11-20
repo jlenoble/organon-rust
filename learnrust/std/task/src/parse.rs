@@ -39,6 +39,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "project" => {
                     task.set_project(value)?;
                 }
+                "recur" => {
+                    task.set_recur(value)?;
+                }
                 _ => {
                     return Err(TaskError::UnknownKey(key.to_owned()));
                 }
