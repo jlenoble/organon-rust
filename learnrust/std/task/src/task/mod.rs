@@ -15,6 +15,7 @@ pub struct Task {
     imask: f64,
     mask: Vec<Mask>,
     modified: Option<DateTime<Utc>>,
+    parent: Option<Uuid>,
     priority: Priority,
     project: String,
     recur: Recur,
@@ -34,6 +35,7 @@ impl Task {
             imask: f64::NAN,
             mask: vec![],
             modified: None,
+            parent: None,
             priority: Priority::NotSet,
             project: String::new(),
             recur: Recur::NotSet,
@@ -153,6 +155,20 @@ impl Task {
 
     pub fn set_modified(&mut self, value: &str) -> Result<()> {
         self.modified = Some(Self::parse_datetime(value)?);
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_parent(&self) -> Option<Uuid> {
+        self.parent
+    }
+
+    pub fn set_parent(&mut self, value: &str) -> Result<()> {
+        self.parent = Some(
+            Uuid::parse_str(value).or_else(|err| Err(TaskError::BadUuid(value.to_owned(), err)))?
+        );
+
         Ok(())
     }
 }

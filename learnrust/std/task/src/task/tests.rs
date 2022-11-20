@@ -181,6 +181,35 @@ fn can_set_modified_property() {
 }
 
 #[test]
+fn can_set_parent_property() {
+    use uuid::uuid;
+    use crate::Task;
+
+    let mut task = Task::new();
+
+    assert!(task.set_parent("dummy string").is_err());
+
+    assert!(task.set_parent("\"67e55044-10b1-426f-9247-bb680e5fe0c8\"").is_err());
+
+    assert!(task.set_parent("67e55044-10b1-426f-9247-bb680e5fe0c8").is_ok());
+    assert_eq!(task.get_parent().unwrap(), uuid!("67e55044-10b1-426f-9247-bb680e5fe0c8"));
+
+    assert!(
+        task
+            .set_parent(
+                "\"67e55044-10b1-426f-9247-bb680e5fe0c8,91ebfab9-5d73-408a-bfc4-5c0652e55cee\""
+            )
+            .is_err()
+    );
+
+    assert!(
+        task
+            .set_parent("67e55044-10b1-426f-9247-bb680e5fe0c8,91ebfab9-5d73-408a-bfc4-5c0652e55cee")
+            .is_err()
+    );
+}
+
+#[test]
 fn can_set_priority_property() {
     use crate::{ Priority, Task };
 

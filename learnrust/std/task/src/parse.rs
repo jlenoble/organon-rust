@@ -39,6 +39,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "modified" => {
                     task.set_modified(value)?;
                 }
+                "parent" => {
+                    task.set_parent(value)?;
+                }
                 "priority" => {
                     task.set_priority(value)?;
                 }
