@@ -63,7 +63,14 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "wait" => {
                     task.set_wait(value)?;
                 }
-                _ => {
+                key => {
+                    if let Ok((key, dt)) = Entry::split_at(key, '_') {
+                        if key == "annotation" {
+                            task.set_annotation(dt, value)?;
+                            continue;
+                        }
+                    }
+
                     return Err(TaskError::UnknownKey(key.to_owned()));
                 }
             }

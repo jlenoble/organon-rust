@@ -48,7 +48,7 @@ impl Entry {
     }
 
     #[inline]
-    fn split_at(s: &str, ch: char) -> Result<(&str, &str)> {
+    pub fn split_at(s: &str, ch: char) -> Result<(&str, &str)> {
         let mut position: usize = 0;
         let mut rest = s;
 

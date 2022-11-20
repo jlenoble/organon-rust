@@ -1,5 +1,7 @@
 mod tests;
 
+use std::collections::HashMap;
+
 use chrono::{ DateTime, NaiveDateTime, Utc };
 
 use uuid::Uuid;
@@ -8,6 +10,7 @@ use crate::{ Mask, Priority, Recur, Result, Status, TaskError };
 
 #[derive(Debug, PartialEq)]
 pub struct Task {
+    annotations: HashMap<DateTime<Utc>, String>,
     depends: Vec<Uuid>,
     description: String,
     due: Option<DateTime<Utc>>,
@@ -28,6 +31,7 @@ pub struct Task {
 impl Task {
     pub fn new() -> Self {
         Self {
+            annotations: HashMap::new(),
             depends: vec![],
             description: String::new(),
             due: None,
@@ -54,6 +58,24 @@ impl Task {
         }
 
         Err(TaskError::FailedToParseDateTime(value.to_owned()))
+    }
+}
+
+impl Task {
+    pub fn get_annotations(&self) -> &HashMap<DateTime<Utc>, String> {
+        &self.annotations
+    }
+
+    pub fn set_annotation(&mut self, datetime: &str, value: &str) -> Result<()> {
+        let datetime = Self::parse_datetime(datetime)?;
+
+        if value.is_empty() {
+            return Err(TaskError::EmptyString);
+        }
+
+        self.annotations.insert(datetime, value.to_owned());
+
+        Ok(())
     }
 }
 

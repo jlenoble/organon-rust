@@ -1,4 +1,40 @@
 #[test]
+fn can_set_annotations_property() {
+    use std::collections::HashMap;
+    use chrono::{ FixedOffset, TimeZone };
+    use crate::Task;
+
+    let mut task = Task::new();
+
+    assert!(task.set_annotation("bad date", "ok value").is_err());
+    assert!(task.set_annotation("1669028400", "").is_err());
+
+    assert!(task.set_annotation("1669028400", "ok value").is_ok());
+    assert!(task.set_annotation("1669032000", "another ok value").is_ok());
+    assert_eq!(
+        *task.get_annotations(),
+        HashMap::from([
+            (
+                FixedOffset::east_opt(3600)
+                    .unwrap()
+                    .with_ymd_and_hms(2022, 11, 21, 12, 0, 0)
+                    .unwrap()
+                    .into(),
+                "ok value".to_owned(),
+            ),
+            (
+                FixedOffset::east_opt(3600)
+                    .unwrap()
+                    .with_ymd_and_hms(2022, 11, 21, 13, 0, 0)
+                    .unwrap()
+                    .into(),
+                "another ok value".to_owned(),
+            ),
+        ])
+    )
+}
+
+#[test]
 fn can_set_depends_property() {
     use uuid::uuid;
     use crate::Task;
