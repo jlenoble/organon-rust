@@ -15,14 +15,6 @@ impl Task {
             description: String::new(),
         }
     }
-
-    pub fn unquote(value: &str) -> Result<&str> {
-        if value.as_bytes()[0] == b'"' && value.as_bytes()[value.as_bytes().len() - 1] == b'"' {
-            Ok(&value[1..value.len() - 1])
-        } else {
-            Err(TaskError::UnquotedString(value.to_owned()))
-        }
-    }
 }
 
 impl Task {
@@ -31,8 +23,6 @@ impl Task {
     }
 
     pub fn set_depends(&mut self, value: &str) -> Result<()> {
-        let value = Self::unquote(value)?;
-
         self.depends.clear();
 
         for dep in value.split(',') {
@@ -55,23 +45,23 @@ fn can_set_depends_property() {
 
     assert!(task.set_depends("dummy string").is_err());
 
-    assert!(task.set_depends("67e55044-10b1-426f-9247-bb680e5fe0c8").is_err());
-
-    assert!(
-        task
-            .set_depends(
-                "67e55044-10b1-426f-9247-bb680e5fe0c8,91ebfab9-5d73-408a-bfc4-5c0652e55cee"
-            )
-            .is_err()
-    );
-
-    assert!(task.set_depends("\"67e55044-10b1-426f-9247-bb680e5fe0c8\"").is_ok());
-    assert_eq!(*task.get_depends(), vec![uuid!("67e55044-10b1-426f-9247-bb680e5fe0c8")]);
+    assert!(task.set_depends("\"67e55044-10b1-426f-9247-bb680e5fe0c8\"").is_err());
 
     assert!(
         task
             .set_depends(
                 "\"67e55044-10b1-426f-9247-bb680e5fe0c8,91ebfab9-5d73-408a-bfc4-5c0652e55cee\""
+            )
+            .is_err()
+    );
+
+    assert!(task.set_depends("67e55044-10b1-426f-9247-bb680e5fe0c8").is_ok());
+    assert_eq!(*task.get_depends(), vec![uuid!("67e55044-10b1-426f-9247-bb680e5fe0c8")]);
+
+    assert!(
+        task
+            .set_depends(
+                "67e55044-10b1-426f-9247-bb680e5fe0c8,91ebfab9-5d73-408a-bfc4-5c0652e55cee"
             )
             .is_ok()
     );
@@ -90,8 +80,6 @@ impl Task {
     }
 
     pub fn set_description(&mut self, value: &str) -> Result<()> {
-        let value = Self::unquote(value)?;
-
         self.description.clear();
         self.description.push_str(value);
 
@@ -103,8 +91,9 @@ impl Task {
 fn can_set_description_property() {
     let mut task = Task::new();
 
-    assert!(task.set_description("unquoted string").is_err());
+    assert!(task.set_description("unquoted string").is_ok());
+    assert_eq!(*task.get_description(), "unquoted string");
 
     assert!(task.set_description("\"quoted string\"").is_ok());
-    assert_eq!(*task.get_description(), "quoted string");
+    assert_eq!(*task.get_description(), "\"quoted string\"");
 }

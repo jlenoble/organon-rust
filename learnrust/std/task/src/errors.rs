@@ -13,6 +13,8 @@ pub enum TaskError {
     UnknownKey(String),
     BadUuid(String, uuid::Error),
     UnquotedString(String),
+    CharacterNotFound(String, char),
+    EntryAlreadyParsed(String),
 }
 
 impl std::fmt::Display for TaskError {
@@ -31,6 +33,10 @@ impl std::fmt::Display for TaskError {
             TaskError::BadUuid(uuid, err) => write!(f, "Bad UUID `{}`: {}", uuid, err),
             TaskError::UnquotedString(value) =>
                 write!(f, "Expected a quoted string, got: {}", value),
+            TaskError::CharacterNotFound(s, ch) =>
+                write!(f, "Character `{}` not found in `{}`", ch, s),
+            TaskError::EntryAlreadyParsed(entry) =>
+                write!(f, "Entry `{}` is already parsed", entry),
         }
     }
 }
