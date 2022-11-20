@@ -20,6 +20,7 @@ pub struct Task {
     scheduled: Option<DateTime<Utc>>,
     status: Status,
     uuid: Uuid,
+    wait: Option<DateTime<Utc>>,
 }
 
 impl Task {
@@ -37,6 +38,7 @@ impl Task {
             scheduled: None,
             status: Status::Pending,
             uuid: Uuid::new_v4(),
+            wait: None,
         }
     }
 
@@ -226,6 +228,17 @@ impl Task {
             Err(TaskError::BadUuid(value.to_owned(), err))
         )?;
 
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_wait(&self) -> Option<DateTime<Utc>> {
+        self.wait
+    }
+
+    pub fn set_wait(&mut self, value: &str) -> Result<()> {
+        self.wait = Some(Self::parse_datetime(value)?);
         Ok(())
     }
 }

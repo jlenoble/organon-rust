@@ -281,3 +281,19 @@ fn can_set_uuid_property() {
             .is_err()
     );
 }
+
+#[test]
+fn can_set_wait_property() {
+    use chrono::{ FixedOffset, TimeZone };
+    use crate::Task;
+
+    let mut task = Task::new();
+
+    assert!(task.set_wait("bad date").is_err());
+
+    assert!(task.set_wait("1669028400").is_ok());
+    assert_eq!(
+        task.get_wait().unwrap(),
+        FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
+    )
+}
