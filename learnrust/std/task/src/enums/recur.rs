@@ -5,6 +5,7 @@ pub enum Recur {
     Daily,
     Weekly,
     Monthly,
+    Quarterly,
 }
 
 impl Into<String> for Recur {
@@ -15,6 +16,7 @@ impl Into<String> for Recur {
             Recur::Daily => "daily".to_owned(),
             Recur::Weekly => "weekly".to_owned(),
             Recur::Monthly => "monthly".to_owned(),
+            Recur::Quarterly => "quarterly".to_owned(),
         }
     }
 }
@@ -26,6 +28,7 @@ impl Into<Recur> for String {
             "daily" => Recur::Daily,
             "weekly" => Recur::Weekly,
             "monthly" => Recur::Monthly,
+            "quarterly" => Recur::Quarterly,
             _ => Recur::Unknown,
         }
     }
