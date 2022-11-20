@@ -20,6 +20,7 @@ pub enum TaskError {
     EmptyString,
     FailedToParseRecur(String),
     FailedToParseStatus(String),
+    FailedToParsePriority(String),
 }
 
 impl std::fmt::Display for TaskError {
@@ -50,6 +51,8 @@ impl std::fmt::Display for TaskError {
                 write!(f, "Failed to parse recurrence periodicity `{}`", recur),
             TaskError::FailedToParseStatus(status) =>
                 write!(f, "Failed to parse status `{}`", status),
+            TaskError::FailedToParsePriority(priority) =>
+                write!(f, "Failed to parse priority `{}`", priority),
         }
     }
 }

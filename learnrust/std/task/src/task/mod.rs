@@ -4,7 +4,7 @@ use chrono::{ DateTime, NaiveDateTime, Utc };
 
 use uuid::Uuid;
 
-use crate::{ Mask, Recur, Result, Status, TaskError };
+use crate::{ Mask, Priority, Recur, Result, Status, TaskError };
 
 #[derive(Debug, PartialEq)]
 pub struct Task {
@@ -14,6 +14,7 @@ pub struct Task {
     entry: DateTime<Utc>,
     mask: Vec<Mask>,
     modified: Option<DateTime<Utc>>,
+    priority: Priority,
     project: String,
     recur: Recur,
     status: Status,
@@ -29,6 +30,7 @@ impl Task {
             entry: Utc::now(),
             mask: vec![],
             modified: None,
+            priority: Priority::NotSet,
             project: String::new(),
             recur: Recur::NotSet,
             status: Status::Pending,
@@ -132,6 +134,23 @@ impl Task {
 
     pub fn set_modified(&mut self, value: &str) -> Result<()> {
         self.modified = Some(Self::parse_datetime(value)?);
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_priority(&self) -> Priority {
+        self.priority
+    }
+
+    pub fn set_priority(&mut self, value: &str) -> Result<()> {
+        let pri: Priority = value.to_owned().into();
+
+        if pri == Priority::Unknown {
+            return Err(TaskError::FailedToParsePriority(value.to_owned()));
+        }
+
+        self.priority = pri;
         Ok(())
     }
 }

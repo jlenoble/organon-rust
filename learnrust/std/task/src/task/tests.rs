@@ -166,6 +166,27 @@ fn can_set_modified_property() {
 }
 
 #[test]
+fn can_set_priority_property() {
+    use crate::{ Priority, Task };
+
+    let mut task = Task::new();
+
+    assert!(task.set_priority("").is_ok());
+    assert_eq!(task.get_priority(), Priority::NotSet);
+
+    assert!(task.set_priority("foo").is_err());
+
+    assert!(task.set_priority("L").is_ok());
+    assert_eq!(task.get_priority(), Priority::Low);
+
+    assert!(task.set_priority("M").is_ok());
+    assert_eq!(task.get_priority(), Priority::Medium);
+
+    assert!(task.set_priority("H").is_ok());
+    assert_eq!(task.get_priority(), Priority::High);
+}
+
+#[test]
 fn can_set_project_property() {
     use crate::Task;
 
