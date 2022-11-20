@@ -46,6 +46,7 @@ pub struct Task {
     entry: DateTime<Utc>,
     mask: Vec<Mask>,
     modified: Option<DateTime<Utc>>,
+    project: String,
 }
 
 impl Task {
@@ -57,6 +58,7 @@ impl Task {
             entry: Utc::now(),
             mask: vec![],
             modified: None,
+            project: String::new(),
         }
     }
 
@@ -317,4 +319,27 @@ fn can_set_modified_property() {
         task.get_modified().unwrap(),
         FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
     )
+}
+
+impl Task {
+    pub fn get_project(&self) -> &String {
+        &self.project
+    }
+
+    pub fn set_project(&mut self, value: &str) -> Result<()> {
+        self.project.clear();
+        self.project.push_str(value);
+        Ok(())
+    }
+}
+
+#[test]
+fn can_set_project_property() {
+    let mut task = Task::new();
+
+    assert!(task.set_project("unquoted string").is_ok());
+    assert_eq!(*task.get_project(), "unquoted string");
+
+    assert!(task.set_project("\"quoted string\"").is_ok());
+    assert_eq!(*task.get_project(), "\"quoted string\"");
 }

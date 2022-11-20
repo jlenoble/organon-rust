@@ -17,6 +17,7 @@ pub enum TaskError {
     EntryAlreadyParsed(String),
     FailedToParseDateTime(String),
     FailedToParseMask(String),
+    EmptyString,
 }
 
 impl std::fmt::Display for TaskError {
@@ -42,6 +43,7 @@ impl std::fmt::Display for TaskError {
             TaskError::FailedToParseDateTime(dt) => write!(f, "Failed to parse DateTime `{}`", dt),
             TaskError::FailedToParseMask(mask) =>
                 write!(f, "Failed to parse recurrence mask `{}`", mask),
+            TaskError::EmptyString => write!(f, "String value should not be empty"),
         }
     }
 }
