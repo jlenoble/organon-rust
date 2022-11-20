@@ -17,6 +17,7 @@ pub struct Task {
     project: String,
     recur: Recur,
     status: Status,
+    uuid: Uuid,
 }
 
 impl Task {
@@ -31,6 +32,7 @@ impl Task {
             project: String::new(),
             recur: Recur::NotSet,
             status: Status::Pending,
+            uuid: Uuid::new_v4(),
         }
     }
 
@@ -177,6 +179,20 @@ impl Task {
         }
 
         self.status = stat;
+
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_uuid(&self) -> &Uuid {
+        &self.uuid
+    }
+
+    pub fn set_uuid(&mut self, value: &str) -> Result<()> {
+        self.uuid = Uuid::parse_str(value).or_else(|err|
+            Err(TaskError::BadUuid(value.to_owned(), err))
+        )?;
 
         Ok(())
     }

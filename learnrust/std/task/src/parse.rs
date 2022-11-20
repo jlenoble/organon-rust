@@ -45,6 +45,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "status" => {
                     task.set_status(value)?;
                 }
+                "uuid" => {
+                    task.set_uuid(value)?;
+                }
                 _ => {
                     return Err(TaskError::UnknownKey(key.to_owned()));
                 }

@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 chrono = { workspace = true }
 shellexpand = { workspace = true }
-uuid = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
