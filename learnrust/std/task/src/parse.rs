@@ -30,6 +30,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "entry" => {
                     task.set_entry(value)?;
                 }
+                "imask" => {
+                    task.set_imask(value)?;
+                }
                 "mask" => {
                     task.set_mask(value)?;
                 }

@@ -12,6 +12,7 @@ pub struct Task {
     description: String,
     due: Option<DateTime<Utc>>,
     entry: DateTime<Utc>,
+    imask: f64,
     mask: Vec<Mask>,
     modified: Option<DateTime<Utc>>,
     priority: Priority,
@@ -30,6 +31,7 @@ impl Task {
             description: String::new(),
             due: None,
             entry: Utc::now(),
+            imask: f64::NAN,
             mask: vec![],
             modified: None,
             priority: Priority::NotSet,
@@ -104,6 +106,19 @@ impl Task {
 
     pub fn set_entry(&mut self, value: &str) -> Result<()> {
         self.entry = Self::parse_datetime(value)?;
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_imask(&self) -> f64 {
+        self.imask
+    }
+
+    pub fn set_imask(&mut self, value: &str) -> Result<()> {
+        self.imask = value
+            .parse()
+            .or_else(|err| Err(TaskError::FailedToParseIMask(value.to_owned(), err)))?;
         Ok(())
     }
 }

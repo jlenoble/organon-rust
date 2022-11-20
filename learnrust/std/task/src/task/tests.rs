@@ -82,6 +82,21 @@ fn can_set_entry_property() {
 }
 
 #[test]
+fn can_set_imask_property() {
+    use crate::Task;
+
+    let mut task = Task::new();
+
+    assert!(task.set_imask("bad index").is_err());
+
+    assert!(task.set_imask("12").is_ok());
+    assert_eq!(task.get_imask(), 12f64);
+
+    assert!(task.set_imask("2.000000").is_ok());
+    assert_eq!(task.get_imask(), 2f64);
+}
+
+#[test]
 fn can_set_mask_property() {
     use crate::{ Mask, Task };
 

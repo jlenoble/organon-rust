@@ -1,4 +1,4 @@
-use std::{ io, env };
+use std::{ io, env, num::ParseFloatError };
 use shellexpand::LookupError;
 use uuid;
 
@@ -21,6 +21,7 @@ pub enum TaskError {
     FailedToParseRecur(String),
     FailedToParseStatus(String),
     FailedToParsePriority(String),
+    FailedToParseIMask(String, ParseFloatError),
 }
 
 impl std::fmt::Display for TaskError {
@@ -45,14 +46,16 @@ impl std::fmt::Display for TaskError {
                 write!(f, "Entry `{}` is already parsed", entry),
             TaskError::FailedToParseDateTime(dt) => write!(f, "Failed to parse DateTime `{}`", dt),
             TaskError::FailedToParseMask(mask) =>
-                write!(f, "Failed to parse recurrence mask `{}`", mask),
+                write!(f, "Failed to parse recurrence mask (mask) `{}`", mask),
             TaskError::EmptyString => write!(f, "String value should not be empty"),
             TaskError::FailedToParseRecur(recur) =>
-                write!(f, "Failed to parse recurrence periodicity `{}`", recur),
+                write!(f, "Failed to parse recurrence periodicity (recur) `{}`", recur),
             TaskError::FailedToParseStatus(status) =>
                 write!(f, "Failed to parse status `{}`", status),
             TaskError::FailedToParsePriority(priority) =>
                 write!(f, "Failed to parse priority `{}`", priority),
+            TaskError::FailedToParseIMask(idx, err) =>
+                write!(f, "Failed to parse recurrence mask index (imask) `{}`: {}", idx, err),
         }
     }
 }
