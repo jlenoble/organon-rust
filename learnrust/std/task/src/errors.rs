@@ -16,6 +16,7 @@ pub enum TaskError {
     CharacterNotFound(String, char),
     EntryAlreadyParsed(String),
     FailedToParseDateTime(String),
+    FailedToParseMask(String),
 }
 
 impl std::fmt::Display for TaskError {
@@ -39,6 +40,8 @@ impl std::fmt::Display for TaskError {
             TaskError::EntryAlreadyParsed(entry) =>
                 write!(f, "Entry `{}` is already parsed", entry),
             TaskError::FailedToParseDateTime(dt) => write!(f, "Failed to parse DateTime `{}`", dt),
+            TaskError::FailedToParseMask(mask) =>
+                write!(f, "Failed to parse recurrence mask `{}`", mask),
         }
     }
 }

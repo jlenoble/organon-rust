@@ -5,11 +5,46 @@ use uuid::Uuid;
 use crate::{ Result, TaskError };
 
 #[derive(Debug, PartialEq)]
+#[repr(u8)]
+pub enum Mask {
+    Pending,
+    Completed,
+    Deleted,
+    Waiting,
+    Unknown,
+}
+
+impl Into<u8> for Mask {
+    fn into(self) -> u8 {
+        match self {
+            Mask::Pending => b'-',
+            Mask::Completed => b'+',
+            Mask::Deleted => b'X',
+            Mask::Waiting => b'W',
+            Mask::Unknown => b'?',
+        }
+    }
+}
+
+impl Into<Mask> for u8 {
+    fn into(self) -> Mask {
+        match self {
+            b'-' => Mask::Pending,
+            b'+' => Mask::Completed,
+            b'X' => Mask::Deleted,
+            b'W' => Mask::Waiting,
+            _ => Mask::Unknown,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 pub struct Task {
     depends: Vec<Uuid>,
     description: String,
     due: Option<DateTime<Utc>>,
     entry: DateTime<Utc>,
+    mask: Vec<Mask>,
 }
 
 impl Task {
@@ -19,6 +54,7 @@ impl Task {
             description: String::new(),
             due: None,
             entry: Utc::now(),
+            mask: vec![],
         }
     }
 }
@@ -166,4 +202,93 @@ fn can_set_entry_property() {
         task.get_entry(),
         FixedOffset::east_opt(3600).unwrap().with_ymd_and_hms(2022, 11, 21, 12, 0, 0).unwrap()
     )
+}
+
+impl Task {
+    pub fn get_mask(&self) -> &Vec<Mask> {
+        &self.mask
+    }
+
+    pub fn set_mask(&mut self, value: &str) -> Result<()> {
+        let mut mask: Vec<Mask> = vec![];
+
+        for ch in value.as_bytes() {
+            let msk: Mask = (*ch).into();
+
+            if msk == Mask::Unknown {
+                return Err(TaskError::FailedToParseMask(value.to_owned()));
+            }
+
+            mask.push(msk);
+        }
+
+        self.mask = mask;
+        return Ok(());
+    }
+}
+
+#[test]
+fn can_set_mask_property() {
+    let mut task = Task::new();
+
+    assert!(task.set_mask("bad mask").is_err());
+
+    assert!(task.set_mask("").is_ok());
+    assert_eq!(*task.get_mask(), vec![]);
+
+    assert!(task.set_mask("-").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Pending]);
+
+    assert!(task.set_mask("+").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Completed]);
+
+    assert!(task.set_mask("X").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Deleted]);
+
+    assert!(task.set_mask("W").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Waiting]);
+
+    assert!(task.set_mask("+-").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Completed, Mask::Pending]);
+
+    assert!(task.set_mask("+--").is_ok());
+    assert_eq!(*task.get_mask(), vec![Mask::Completed, Mask::Pending, Mask::Pending]);
+
+    assert!(task.set_mask("++X+W-").is_ok());
+    assert_eq!(
+        *task.get_mask(),
+        vec![
+            Mask::Completed,
+            Mask::Completed,
+            Mask::Deleted,
+            Mask::Completed,
+            Mask::Waiting,
+            Mask::Pending
+        ]
+    );
+
+    assert!(task.set_mask("+XXX++WXWW--XW").is_ok());
+    assert_eq!(
+        *task.get_mask(),
+        vec![
+            Mask::Completed,
+            Mask::Deleted,
+            Mask::Deleted,
+            Mask::Deleted,
+            Mask::Completed,
+            Mask::Completed,
+            Mask::Waiting,
+            Mask::Deleted,
+            Mask::Waiting,
+            Mask::Waiting,
+            Mask::Pending,
+            Mask::Pending,
+            Mask::Deleted,
+            Mask::Waiting
+        ]
+    );
+
+    assert!(task.set_mask("+XXX++WXWW--XW!").is_err());
+    assert!(task.set_mask("+XXX++W!WW--XW").is_err());
+    assert!(task.set_mask("!+XXX++WXWW--XW").is_err());
 }
