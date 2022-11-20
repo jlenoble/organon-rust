@@ -2,6 +2,7 @@
 pub enum Status {
     Unknown,
     Pending,
+    Completed,
     Deleted,
     Waiting,
     Recurring,
@@ -12,6 +13,7 @@ impl Into<String> for Status {
         match self {
             Status::Unknown => "?".to_owned(),
             Status::Pending => "pending".to_owned(),
+            Status::Completed => "completed".to_owned(),
             Status::Deleted => "deleted".to_owned(),
             Status::Waiting => "waiting".to_owned(),
             Status::Recurring => "recurring".to_owned(),
@@ -23,6 +25,7 @@ impl Into<Status> for String {
     fn into(self) -> Status {
         match self.as_str() {
             "pending" => Status::Pending,
+            "completed" => Status::Completed,
             "deleted" => Status::Deleted,
             "waiting" => Status::Waiting,
             "recurring" => Status::Recurring,
