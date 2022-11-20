@@ -2,7 +2,7 @@ use chrono::{ DateTime, NaiveDateTime, Utc };
 
 use uuid::Uuid;
 
-use crate::{ Mask, Recur, Result, TaskError };
+use crate::{ Mask, Recur, Result, Status, TaskError };
 
 #[derive(Debug, PartialEq)]
 pub struct Task {
@@ -14,6 +14,7 @@ pub struct Task {
     modified: Option<DateTime<Utc>>,
     project: String,
     recur: Recur,
+    status: Status,
 }
 
 impl Task {
@@ -27,6 +28,7 @@ impl Task {
             modified: None,
             project: String::new(),
             recur: Recur::NotSet,
+            status: Status::Pending,
         }
     }
 
@@ -347,4 +349,37 @@ fn can_set_recur_property() {
     assert_eq!(task.get_recur(), Recur::Monthly);
 
     assert!(task.set_recur("foo").is_err());
+}
+
+impl Task {
+    pub fn get_status(&self) -> Status {
+        self.status
+    }
+
+    pub fn set_status(&mut self, value: &str) -> Result<()> {
+        let stat: Status = value.to_owned().into();
+
+        if stat == Status::Unknown {
+            return Err(TaskError::FailedToParseStatus(value.to_owned()));
+        }
+
+        self.status = stat;
+
+        Ok(())
+    }
+}
+
+#[test]
+fn can_set_status_property() {
+    let mut task = Task::new();
+
+    assert!(task.set_status("").is_err());
+
+    assert!(task.set_status("foo").is_err());
+
+    assert!(task.set_status("pending").is_ok());
+    assert_eq!(task.get_status(), Status::Pending);
+
+    assert!(task.set_status("recurring").is_ok());
+    assert_eq!(task.get_status(), Status::Recurring);
 }
