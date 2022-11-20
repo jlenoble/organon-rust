@@ -45,6 +45,9 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
                 "recur" => {
                     task.set_recur(value)?;
                 }
+                "scheduled" => {
+                    task.set_scheduled(value)?;
+                }
                 "status" => {
                     task.set_status(value)?;
                 }

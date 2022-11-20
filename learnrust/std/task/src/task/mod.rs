@@ -17,6 +17,7 @@ pub struct Task {
     priority: Priority,
     project: String,
     recur: Recur,
+    scheduled: Option<DateTime<Utc>>,
     status: Status,
     uuid: Uuid,
 }
@@ -33,6 +34,7 @@ impl Task {
             priority: Priority::NotSet,
             project: String::new(),
             recur: Recur::NotSet,
+            scheduled: None,
             status: Status::Pending,
             uuid: Uuid::new_v4(),
         }
@@ -181,6 +183,17 @@ impl Task {
 
         self.recur = rec;
 
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_scheduled(&self) -> Option<DateTime<Utc>> {
+        self.scheduled
+    }
+
+    pub fn set_scheduled(&mut self, value: &str) -> Result<()> {
+        self.scheduled = Some(Self::parse_datetime(value)?);
         Ok(())
     }
 }
