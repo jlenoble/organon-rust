@@ -49,6 +49,9 @@ pub fn parse_task_line(line: String) -> Result<Task> {
             "scheduled" => {
                 task.set_scheduled(value)?;
             }
+            "start" => {
+                task.set_start(value)?;
+            }
             "status" => {
                 task.set_status(value)?;
             }
