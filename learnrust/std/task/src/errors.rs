@@ -22,6 +22,7 @@ pub enum TaskError {
     FailedToParseStatus(String),
     FailedToParsePriority(String),
     FailedToParseIMask(String, ParseFloatError),
+    PrematureEndOfFile,
 }
 
 impl std::fmt::Display for TaskError {
@@ -56,6 +57,8 @@ impl std::fmt::Display for TaskError {
                 write!(f, "Failed to parse priority `{}`", priority),
             TaskError::FailedToParseIMask(idx, err) =>
                 write!(f, "Failed to parse recurrence mask index (imask) `{}`: {}", idx, err),
+            TaskError::PrematureEndOfFile =>
+                write!(f, "EOF was reached prematurely, incomplete or inexistant entry"),
         }
     }
 }

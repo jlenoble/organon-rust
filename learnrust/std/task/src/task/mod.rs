@@ -52,7 +52,7 @@ impl Task {
         }
     }
 
-    fn parse_datetime(value: &str) -> Result<DateTime<Utc>> {
+    pub fn parse_datetime(value: &str) -> Result<DateTime<Utc>> {
         if let Ok(timestamp) = value.parse::<i64>() {
             if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
                 return Ok(DateTime::from_utc(naive, Utc));
