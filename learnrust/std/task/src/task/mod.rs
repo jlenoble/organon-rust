@@ -25,6 +25,7 @@ pub struct Task {
     recur: Recur,
     scheduled: Option<DateTime<Utc>>,
     status: Status,
+    until: Option<DateTime<Utc>>,
     uuid: Uuid,
     wait: Option<DateTime<Utc>>,
 }
@@ -47,6 +48,7 @@ impl Task {
             recur: Recur::NotSet,
             scheduled: None,
             status: Status::Pending,
+            until: None,
             uuid: Uuid::new_v4(),
             wait: None,
         }
@@ -280,6 +282,17 @@ impl Task {
 
         self.status = stat;
 
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_until(&self) -> Option<DateTime<Utc>> {
+        self.until
+    }
+
+    pub fn set_until(&mut self, value: &str) -> Result<()> {
+        self.until = Some(Self::parse_datetime(value)?);
         Ok(())
     }
 }

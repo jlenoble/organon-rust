@@ -52,6 +52,9 @@ pub fn parse_task_line(line: String) -> Result<Task> {
             "status" => {
                 task.set_status(value)?;
             }
+            "until" => {
+                task.set_until(value)?;
+            }
             "uuid" => {
                 task.set_uuid(value)?;
             }
