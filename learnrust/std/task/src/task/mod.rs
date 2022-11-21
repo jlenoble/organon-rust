@@ -6,7 +6,7 @@ use chrono::{ DateTime, NaiveDateTime, Utc };
 
 use uuid::Uuid;
 
-use crate::{ Mask, Priority, Recur, Result, Status, TaskError };
+use crate::{ Entry, Mask, Priority, Recur, Result, Status, TaskError };
 
 #[derive(Debug, PartialEq)]
 pub struct Task {
@@ -56,10 +56,99 @@ impl Task {
         }
     }
 
+    pub fn build(props: &Vec<(String, String)>) -> Result<Task> {
+        let mut task = Task::new();
+
+        for (key, value) in props {
+            match key.as_str() {
+                "depends" => {
+                    task.set_depends(value)?;
+                }
+                "description" => {
+                    task.set_description(value)?;
+                }
+                "due" => {
+                    task.set_due(value)?;
+                }
+                "end" => {
+                    task.set_end(value)?;
+                }
+                "entry" => {
+                    task.set_entry(value)?;
+                }
+                "imask" => {
+                    task.set_imask(value)?;
+                }
+                "mask" => {
+                    task.set_mask(value)?;
+                }
+                "modified" => {
+                    task.set_modified(value)?;
+                }
+                "parent" => {
+                    task.set_parent(value)?;
+                }
+                "priority" => {
+                    task.set_priority(value)?;
+                }
+                "project" => {
+                    task.set_project(value)?;
+                }
+                "recur" => {
+                    task.set_recur(value)?;
+                }
+                "scheduled" => {
+                    task.set_scheduled(value)?;
+                }
+                "start" => {
+                    task.set_start(value)?;
+                }
+                "status" => {
+                    task.set_status(value)?;
+                }
+                "until" => {
+                    task.set_until(value)?;
+                }
+                "uuid" => {
+                    task.set_uuid(value)?;
+                }
+                "wait" => {
+                    task.set_wait(value)?;
+                }
+                key => {
+                    if let Ok((key, dt)) = Entry::split_at(key, '_') {
+                        if key == "annotation" {
+                            task.set_annotation(dt, value)?;
+                            continue;
+                        }
+                    }
+
+                    return Err(TaskError::UnknownKey(key.to_owned()));
+                }
+            }
+        }
+
+        Ok(task)
+    }
+
     pub fn parse_datetime(value: &str) -> Result<DateTime<Utc>> {
         if let Ok(timestamp) = value.parse::<i64>() {
             if let Some(naive) = NaiveDateTime::from_timestamp_opt(timestamp, 0) {
                 return Ok(DateTime::from_utc(naive, Utc));
+            }
+        } else if value.len() == 16 {
+            let dt =
+                String::from(&value[0..4]) +
+                "-" +
+                &value[4..6] +
+                "-" +
+                &value[6..11] +
+                ":" +
+                &value[11..13] +
+                ":" +
+                &value[13..];
+            if let Ok(dt) = dt.parse::<DateTime<Utc>>() {
+                return Ok(dt);
             }
         }
 

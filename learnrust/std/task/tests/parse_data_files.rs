@@ -1,7 +1,13 @@
 use std::path::Path;
 use shellexpand;
 
-use task::{ parse_task_data_file, parse_undo_data_file, Result, TaskError };
+use task::{
+    parse_backlog_data_file,
+    parse_task_data_file,
+    parse_undo_data_file,
+    Result,
+    TaskError,
+};
 
 #[test]
 fn parse_backlog_data() -> Result<()> {
@@ -11,7 +17,7 @@ fn parse_backlog_data() -> Result<()> {
         .or_else(|err| Err(TaskError::FailedToExpandPath(path.to_owned(), err)))?;
     let path = Path::new(&*path);
 
-    parse_task_data_file(path)?;
+    parse_backlog_data_file(path)?;
 
     Ok(())
 }

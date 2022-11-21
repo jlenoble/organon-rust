@@ -1,83 +1,18 @@
 use std::{ fs::File, io::{ BufRead, BufReader }, path::Path };
-use crate::{ ChangeEntry, Entry, Result, Task, TaskError };
+use crate::{ ChangeEntry, Entry, LogEntry, Result, Task, TaskError };
 
 pub fn parse_task_line(line: String) -> Result<Task> {
     let mut entry = Entry::new(line);
     entry.parse()?;
-
     let props = entry.get_props();
-    let mut task = Task::new();
+    Task::build(props)
+}
 
-    for (key, value) in props {
-        match key.as_str() {
-            "depends" => {
-                task.set_depends(value)?;
-            }
-            "description" => {
-                task.set_description(value)?;
-            }
-            "due" => {
-                task.set_due(value)?;
-            }
-            "end" => {
-                task.set_end(value)?;
-            }
-            "entry" => {
-                task.set_entry(value)?;
-            }
-            "imask" => {
-                task.set_imask(value)?;
-            }
-            "mask" => {
-                task.set_mask(value)?;
-            }
-            "modified" => {
-                task.set_modified(value)?;
-            }
-            "parent" => {
-                task.set_parent(value)?;
-            }
-            "priority" => {
-                task.set_priority(value)?;
-            }
-            "project" => {
-                task.set_project(value)?;
-            }
-            "recur" => {
-                task.set_recur(value)?;
-            }
-            "scheduled" => {
-                task.set_scheduled(value)?;
-            }
-            "start" => {
-                task.set_start(value)?;
-            }
-            "status" => {
-                task.set_status(value)?;
-            }
-            "until" => {
-                task.set_until(value)?;
-            }
-            "uuid" => {
-                task.set_uuid(value)?;
-            }
-            "wait" => {
-                task.set_wait(value)?;
-            }
-            key => {
-                if let Ok((key, dt)) = Entry::split_at(key, '_') {
-                    if key == "annotation" {
-                        task.set_annotation(dt, value)?;
-                        continue;
-                    }
-                }
-
-                return Err(TaskError::UnknownKey(key.to_owned()));
-            }
-        }
-    }
-
-    Ok(task)
+pub fn parse_json_task_line(line: String) -> Result<Task> {
+    let mut entry = LogEntry::new(line);
+    entry.parse()?;
+    let props = entry.get_props();
+    Task::build(props)
 }
 
 /// Parse pending.data and completed.data
@@ -91,6 +26,25 @@ pub fn parse_task_data_file(path: &Path) -> Result<Vec<Task>> {
 
     for line in f.lines() {
         let task = parse_task_line(line.or_else(|err| Err(TaskError::FailedToReadLine(err)))?)?;
+        tasks.push(task);
+    }
+
+    Ok(tasks)
+}
+
+/// Parse backlog.data
+pub fn parse_backlog_data_file(path: &Path) -> Result<Vec<Task>> {
+    let mut tasks: Vec<Task> = vec![];
+
+    let f = File::open(path).or_else(|err|
+        Err(TaskError::FailedToOpenFile(path.to_str().unwrap_or("").to_owned(), err))
+    )?;
+    let f = BufReader::new(f);
+
+    for line in f.lines() {
+        let task = parse_json_task_line(
+            line.or_else(|err| Err(TaskError::FailedToReadLine(err)))?
+        )?;
         tasks.push(task);
     }
 
