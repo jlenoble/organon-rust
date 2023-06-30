@@ -77,6 +77,12 @@ impl LogEntry {
 
                 return Ok((key, value, rest));
             }
+            "\"tags\"" => {
+                let (tags, rest) = Self::split_at(s, ']')?;
+                let (key, tags) = Self::split_at(tags.as_str(), ':')?;
+
+                return Ok(((&key[1..key.len() - 1]).to_owned(), (&tags[1..]).to_owned(), rest));
+            }
             _ => Self::split_at(&rest[1..], '"')?,
         };
 

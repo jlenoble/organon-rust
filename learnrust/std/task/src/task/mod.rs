@@ -26,6 +26,9 @@ pub struct Task {
     scheduled: Option<DateTime<Utc>>,
     start: Option<DateTime<Utc>>,
     status: Status,
+    subtask_of: Option<Uuid>,
+    subtasks: Vec<Uuid>,
+    tags: Vec<String>,
     until: Option<DateTime<Utc>>,
     uuid: Uuid,
     wait: Option<DateTime<Utc>>,
@@ -50,6 +53,9 @@ impl Task {
             scheduled: None,
             start: None,
             status: Status::Pending,
+            subtask_of: None,
+            subtasks: vec![],
+            tags: vec![],
             until: None,
             uuid: Uuid::new_v4(),
             wait: None,
@@ -106,6 +112,15 @@ impl Task {
                 "status" => {
                     task.set_status(value)?;
                 }
+                "subtask_of" => {
+                    task.set_subtask_of(value)?;
+                }
+                "subtasks" => {
+                    task.set_subtasks(value)?;
+                }
+                "tags" => {
+                    task.set_tags(value)?;
+                }
                 "until" => {
                     task.set_until(value)?;
                 }
@@ -119,6 +134,9 @@ impl Task {
                     if let Ok((key, dt)) = Entry::split_at(key, '_') {
                         if key == "annotation" {
                             task.set_annotation(dt, value)?;
+                            continue;
+                        } else if key == "tags" {
+                            // future format for 3.0, ignore for now
                             continue;
                         }
                     }
@@ -383,6 +401,55 @@ impl Task {
         }
 
         self.status = stat;
+
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_subtask_of(&self) -> Option<Uuid> {
+        self.subtask_of
+    }
+
+    pub fn set_subtask_of(&mut self, value: &str) -> Result<()> {
+        self.subtask_of = Some(
+            Uuid::parse_str(value).or_else(|err| Err(TaskError::BadUuid(value.to_owned(), err)))?
+        );
+
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_subtasks(&self) -> &Vec<Uuid> {
+        &self.subtasks
+    }
+
+    pub fn set_subtasks(&mut self, value: &str) -> Result<()> {
+        self.subtasks.clear();
+
+        for dep in value.split(',') {
+            let uuid = Uuid::parse_str(dep).or_else(|err|
+                Err(TaskError::BadUuid(dep.to_owned(), err))
+            )?;
+
+            self.subtasks.push(uuid);
+        }
+
+        Ok(())
+    }
+}
+
+impl Task {
+    pub fn get_tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    pub fn set_tags(&mut self, value: &str) -> Result<()> {
+        self.tags = value
+            .split(',')
+            .map(|s| s.to_owned())
+            .collect();
 
         Ok(())
     }
