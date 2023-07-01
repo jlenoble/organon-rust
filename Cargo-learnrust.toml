@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "learnrust/std/derive_builder",
+    "learnrust/std/derive_debug",
+    "learnrust/std/flatten_iterator",
+    "learnrust/std/kilo",
+    "learnrust/std/minigrep",
+    "learnrust/std/organon",
+    "learnrust/std/synex",
+    "learnrust/std/synex/testsuite",
+    "learnrust/std/task",
+    "learnrust/std/tw",
+    "learnrust/std/webserver",
+]
+exclude = ["learnrust/no_std/rustos"]
+
+[workspace.dependencies]
+chrono = "0.4.23"
+color-eyre = "0.6.2"
+permissions = "0.4.1"
+proc-macro2 = "1.0.47"
+quote = "1.0.21"
+shellexpand = "2.1.2"
+syn = "1.0.103"
+thiserror = "1.0.37"
+trybuild = "1.0.71"
+uuid = "1.2.2"
