@@ -2,4 +2,6 @@
 members = ["crates/x86_64"]
 
 [workspace.dependencies]
+strum = "0.24.1"
+strum_macros = "0.24.3"
 ux = "0.1.5"

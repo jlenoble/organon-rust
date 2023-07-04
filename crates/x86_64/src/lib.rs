@@ -4,3 +4,4 @@
 
 pub mod architectures;
 pub mod modes;
+pub mod registers;

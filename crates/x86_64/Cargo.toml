@@ -6,4 +6,6 @@ publish = false
 description = "An exploration of Intel® 64 and IA-32 Architectures Software Developer’s Manual"
 
 [dependencies]
+strum = { workspace = true }
+strum_macros = { workspace = true }
 ux = { workspace = true }
