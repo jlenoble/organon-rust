@@ -1,2 +1,5 @@
 [workspace]
 members = ["crates/x86_64"]
+
+[workspace.dependencies]
+ux = "0.1.5"
