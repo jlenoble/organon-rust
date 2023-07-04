@@ -1,0 +1,6 @@
+[package]
+name = "x86_64"
+version = "0.0.0"
+edition = "2021"
+publish = false
+description = "An exploration of Intel® 64 and IA-32 Architectures Software Developer’s Manual"

@@ -1,4 +1,2 @@
 [workspace]
-members = []
-
-[workspace.dependencies]
+members = ["crates/x86_64"]
