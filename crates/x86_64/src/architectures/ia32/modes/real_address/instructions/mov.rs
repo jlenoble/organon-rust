@@ -1,12 +1,14 @@
-//! IA-32 real-address mode instructions
+//! IA-32 real-address mode MOV and CMOVcc instructions
 //!
-//! *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV*
+//! *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 1, Section 7.3.1.1*
 
 use crate::registers::{ IA32Reg8, IA32Reg16 };
 
 /// Trait encompassing all IA-32 real-address mode MOV family instructions
 pub trait Mov<T> {
     /// generic real-address mode MOV instruction
+    ///
+    /// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV*
     fn mov(dest: T, src: T) -> u16;
 }
 
@@ -26,8 +28,20 @@ macro_rules! impl_instruction {
 impl_instruction!(mov, 0x88c0, IA32Reg8);
 impl_instruction!(mov, 0x89c0, IA32Reg16);
 
+// The following tests follow *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 1, Table 7.1*
+
 #[test]
-fn real_address_mode_mov_instructions() {
+fn real_address_mode_mov_instructions_from_gp_to_memory() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_segment_to_memory() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_gp_to_gp() {
     use strum::IntoEnumIterator;
 
     let mut op_code: u16 = 0x88c0;
@@ -47,4 +61,54 @@ fn real_address_mode_mov_instructions() {
             op_code += 1;
         }
     }
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_memory_to_gp() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_memory_to_segment() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_gp_to_segment() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_segment_to_gp() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_gp_to_control() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_control_to_gp() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_gp_to_debug() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_debug_to_gp() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_immediate_to_gp() {
+    unimplemented!();
+}
+
+#[test]
+fn real_address_mode_mov_instructions_from_immediate_to_memory() {
+    unimplemented!();
 }
