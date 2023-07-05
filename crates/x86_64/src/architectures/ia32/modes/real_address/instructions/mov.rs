@@ -4,29 +4,52 @@
 
 use crate::registers::{ IA32Reg8, IA32Reg16 };
 
-/// Trait encompassing all IA-32 real-address mode MOV family instructions
-pub trait Mov<T> {
+/// Trait encompasSIng all IA-32 real-address mode MOV family instructions
+pub trait Mov<Dest, Src> {
     /// generic real-address mode MOV instruction
     ///
     /// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV*
-    fn mov(dest: T, src: T) -> u16;
+    fn mov(dest: Dest, src: Src) -> u32;
 }
 
 /// IA-32 real-address mode MOV family instruction implementations
 pub struct MOV;
 
-macro_rules! impl_instruction {
+macro_rules! impl_instruction_from_gp_to_gp {
     ($mnemonics:ident, $op_code_base:literal, $arg_type:ty) => {
-        impl Mov<$arg_type> for MOV {
-            fn $mnemonics(dest: $arg_type, src: $arg_type)-> u16 {
-                $op_code_base + (dest as u16) + ((src as u16) << 3)
+        impl Mov<$arg_type, $arg_type> for MOV {
+            fn $mnemonics(dest: $arg_type, src: $arg_type)-> u32 {
+                $op_code_base + (dest as u32) + ((src as u32) << 3)
             }
         }
     };
 }
 
-impl_instruction!(mov, 0x88c0, IA32Reg8);
-impl_instruction!(mov, 0x89c0, IA32Reg16);
+macro_rules! impl_instruction_from_imm_to_gp8 {
+    ($mnemonics:ident, $op_code_base:literal, $arg_type:ty) => {
+        impl Mov<$arg_type, u8> for MOV {
+            fn $mnemonics(dest: $arg_type, src: u8)-> u32 {
+                $op_code_base + (0x100 * (dest as u32)) + (src as u32)
+            }
+        }
+    };
+}
+
+macro_rules! impl_instruction_from_imm_to_gp16 {
+    ($mnemonics:ident, $op_code_base:literal, $arg_type:ty) => {
+        impl Mov<$arg_type, u16> for MOV {
+            fn $mnemonics(dest: $arg_type, src: u16)-> u32 {
+                $op_code_base + (0x10000 * (dest as u32)) + 0x80000 + (((src & 0xff00) >> 8) as u32) + (((src & 0xff) << 8) as u32)
+            }
+        }
+    };
+}
+
+impl_instruction_from_gp_to_gp!(mov, 0x88c0, IA32Reg8);
+impl_instruction_from_gp_to_gp!(mov, 0x89c0, IA32Reg16);
+
+impl_instruction_from_imm_to_gp8!(mov, 0xb000, IA32Reg8);
+impl_instruction_from_imm_to_gp16!(mov, 0xb00000, IA32Reg16);
 
 // The following tests follow *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 1, Table 7.1*
 
@@ -49,6 +72,7 @@ fn real_address_mode_mov_instructions_from_segment_to_memory() {
 
 #[test]
 fn real_address_mode_mov_instructions_from_gp_to_gp() {
+    // Move between 8-bit registers
     assert_eq!(0x88c0, MOV::mov(AL, AL));
     assert_eq!(0x88c1, MOV::mov(CL, AL));
     assert_eq!(0x88c2, MOV::mov(DL, AL));
@@ -57,6 +81,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88c5, MOV::mov(CH, AL));
     assert_eq!(0x88c6, MOV::mov(DH, AL));
     assert_eq!(0x88c7, MOV::mov(BH, AL));
+
     assert_eq!(0x88c8, MOV::mov(AL, CL));
     assert_eq!(0x88c9, MOV::mov(CL, CL));
     assert_eq!(0x88ca, MOV::mov(DL, CL));
@@ -65,6 +90,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88cd, MOV::mov(CH, CL));
     assert_eq!(0x88ce, MOV::mov(DH, CL));
     assert_eq!(0x88cf, MOV::mov(BH, CL));
+
     assert_eq!(0x88d0, MOV::mov(AL, DL));
     assert_eq!(0x88d1, MOV::mov(CL, DL));
     assert_eq!(0x88d2, MOV::mov(DL, DL));
@@ -73,6 +99,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88d5, MOV::mov(CH, DL));
     assert_eq!(0x88d6, MOV::mov(DH, DL));
     assert_eq!(0x88d7, MOV::mov(BH, DL));
+
     assert_eq!(0x88d8, MOV::mov(AL, BL));
     assert_eq!(0x88d9, MOV::mov(CL, BL));
     assert_eq!(0x88da, MOV::mov(DL, BL));
@@ -81,6 +108,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88dd, MOV::mov(CH, BL));
     assert_eq!(0x88de, MOV::mov(DH, BL));
     assert_eq!(0x88df, MOV::mov(BH, BL));
+
     assert_eq!(0x88e0, MOV::mov(AL, AH));
     assert_eq!(0x88e1, MOV::mov(CL, AH));
     assert_eq!(0x88e2, MOV::mov(DL, AH));
@@ -89,6 +117,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88e5, MOV::mov(CH, AH));
     assert_eq!(0x88e6, MOV::mov(DH, AH));
     assert_eq!(0x88e7, MOV::mov(BH, AH));
+
     assert_eq!(0x88e8, MOV::mov(AL, CH));
     assert_eq!(0x88e9, MOV::mov(CL, CH));
     assert_eq!(0x88ea, MOV::mov(DL, CH));
@@ -97,6 +126,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88ed, MOV::mov(CH, CH));
     assert_eq!(0x88ee, MOV::mov(DH, CH));
     assert_eq!(0x88ef, MOV::mov(BH, CH));
+
     assert_eq!(0x88f0, MOV::mov(AL, DH));
     assert_eq!(0x88f1, MOV::mov(CL, DH));
     assert_eq!(0x88f2, MOV::mov(DL, DH));
@@ -105,6 +135,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88f5, MOV::mov(CH, DH));
     assert_eq!(0x88f6, MOV::mov(DH, DH));
     assert_eq!(0x88f7, MOV::mov(BH, DH));
+
     assert_eq!(0x88f8, MOV::mov(AL, BH));
     assert_eq!(0x88f9, MOV::mov(CL, BH));
     assert_eq!(0x88fa, MOV::mov(DL, BH));
@@ -114,6 +145,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x88fe, MOV::mov(DH, BH));
     assert_eq!(0x88ff, MOV::mov(BH, BH));
 
+    // Move between 16-bit registers
     assert_eq!(0x89c0, MOV::mov(AX, AX));
     assert_eq!(0x89c1, MOV::mov(CX, AX));
     assert_eq!(0x89c2, MOV::mov(DX, AX));
@@ -122,6 +154,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89c5, MOV::mov(BP, AX));
     assert_eq!(0x89c6, MOV::mov(SI, AX));
     assert_eq!(0x89c7, MOV::mov(DI, AX));
+
     assert_eq!(0x89c8, MOV::mov(AX, CX));
     assert_eq!(0x89c9, MOV::mov(CX, CX));
     assert_eq!(0x89ca, MOV::mov(DX, CX));
@@ -130,6 +163,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89cd, MOV::mov(BP, CX));
     assert_eq!(0x89ce, MOV::mov(SI, CX));
     assert_eq!(0x89cf, MOV::mov(DI, CX));
+
     assert_eq!(0x89d0, MOV::mov(AX, DX));
     assert_eq!(0x89d1, MOV::mov(CX, DX));
     assert_eq!(0x89d2, MOV::mov(DX, DX));
@@ -138,6 +172,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89d5, MOV::mov(BP, DX));
     assert_eq!(0x89d6, MOV::mov(SI, DX));
     assert_eq!(0x89d7, MOV::mov(DI, DX));
+
     assert_eq!(0x89d8, MOV::mov(AX, BX));
     assert_eq!(0x89d9, MOV::mov(CX, BX));
     assert_eq!(0x89da, MOV::mov(DX, BX));
@@ -146,6 +181,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89dd, MOV::mov(BP, BX));
     assert_eq!(0x89de, MOV::mov(SI, BX));
     assert_eq!(0x89df, MOV::mov(DI, BX));
+
     assert_eq!(0x89e0, MOV::mov(AX, SP));
     assert_eq!(0x89e1, MOV::mov(CX, SP));
     assert_eq!(0x89e2, MOV::mov(DX, SP));
@@ -154,6 +190,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89e5, MOV::mov(BP, SP));
     assert_eq!(0x89e6, MOV::mov(SI, SP));
     assert_eq!(0x89e7, MOV::mov(DI, SP));
+
     assert_eq!(0x89e8, MOV::mov(AX, BP));
     assert_eq!(0x89e9, MOV::mov(CX, BP));
     assert_eq!(0x89ea, MOV::mov(DX, BP));
@@ -162,6 +199,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89ed, MOV::mov(BP, BP));
     assert_eq!(0x89ee, MOV::mov(SI, BP));
     assert_eq!(0x89ef, MOV::mov(DI, BP));
+
     assert_eq!(0x89f0, MOV::mov(AX, SI));
     assert_eq!(0x89f1, MOV::mov(CX, SI));
     assert_eq!(0x89f2, MOV::mov(DX, SI));
@@ -170,6 +208,7 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(0x89f5, MOV::mov(BP, SI));
     assert_eq!(0x89f6, MOV::mov(SI, SI));
     assert_eq!(0x89f7, MOV::mov(DI, SI));
+
     assert_eq!(0x89f8, MOV::mov(AX, DI));
     assert_eq!(0x89f9, MOV::mov(CX, DI));
     assert_eq!(0x89fa, MOV::mov(DX, DI));
@@ -228,10 +267,108 @@ fn real_address_mode_mov_instructions_from_debug_to_gp() {
     unimplemented!();
 }
 
-#[ignore = "unimplemented yet"]
 #[test]
 fn real_address_mode_mov_instructions_from_immediate_to_gp() {
-    unimplemented!();
+    // Move values to 8-bit registers
+    assert_eq!(0xb000, MOV::mov(AL, 0));
+    assert_eq!(0xb100, MOV::mov(CL, 0));
+    assert_eq!(0xb200, MOV::mov(DL, 0));
+    assert_eq!(0xb300, MOV::mov(BL, 0));
+    assert_eq!(0xb400, MOV::mov(AH, 0));
+    assert_eq!(0xb500, MOV::mov(CH, 0));
+    assert_eq!(0xb600, MOV::mov(DH, 0));
+    assert_eq!(0xb700, MOV::mov(BH, 0));
+
+    assert_eq!(0xb00c, MOV::mov(AL, 12));
+    assert_eq!(0xb10c, MOV::mov(CL, 12));
+    assert_eq!(0xb20c, MOV::mov(DL, 12));
+    assert_eq!(0xb30c, MOV::mov(BL, 12));
+    assert_eq!(0xb40c, MOV::mov(AH, 12));
+    assert_eq!(0xb50c, MOV::mov(CH, 12));
+    assert_eq!(0xb60c, MOV::mov(DH, 12));
+    assert_eq!(0xb70c, MOV::mov(BH, 12));
+
+    assert_eq!(0xb010, MOV::mov(AL, 16));
+    assert_eq!(0xb110, MOV::mov(CL, 16));
+    assert_eq!(0xb210, MOV::mov(DL, 16));
+    assert_eq!(0xb310, MOV::mov(BL, 16));
+    assert_eq!(0xb410, MOV::mov(AH, 16));
+    assert_eq!(0xb510, MOV::mov(CH, 16));
+    assert_eq!(0xb610, MOV::mov(DH, 16));
+    assert_eq!(0xb710, MOV::mov(BH, 16));
+
+    assert_eq!(0xb096, MOV::mov(AL, 150));
+    assert_eq!(0xb196, MOV::mov(CL, 150));
+    assert_eq!(0xb296, MOV::mov(DL, 150));
+    assert_eq!(0xb396, MOV::mov(BL, 150));
+    assert_eq!(0xb496, MOV::mov(AH, 150));
+    assert_eq!(0xb596, MOV::mov(CH, 150));
+    assert_eq!(0xb696, MOV::mov(DH, 150));
+    assert_eq!(0xb796, MOV::mov(BH, 150));
+
+    // Move values to 16-bit registers
+    assert_eq!(0xb80000, MOV::mov(AX, 0));
+    assert_eq!(0xb90000, MOV::mov(CX, 0));
+    assert_eq!(0xba0000, MOV::mov(DX, 0));
+    assert_eq!(0xbb0000, MOV::mov(BX, 0));
+    assert_eq!(0xbc0000, MOV::mov(SP, 0));
+    assert_eq!(0xbd0000, MOV::mov(BP, 0));
+    assert_eq!(0xbe0000, MOV::mov(SI, 0));
+    assert_eq!(0xbf0000, MOV::mov(DI, 0));
+
+    assert_eq!(0xb80c00, MOV::mov(AX, 12));
+    assert_eq!(0xb90c00, MOV::mov(CX, 12));
+    assert_eq!(0xba0c00, MOV::mov(DX, 12));
+    assert_eq!(0xbb0c00, MOV::mov(BX, 12));
+    assert_eq!(0xbc0c00, MOV::mov(SP, 12));
+    assert_eq!(0xbd0c00, MOV::mov(BP, 12));
+    assert_eq!(0xbe0c00, MOV::mov(SI, 12));
+    assert_eq!(0xbf0c00, MOV::mov(DI, 12));
+
+    assert_eq!(0xb81000, MOV::mov(AX, 16));
+    assert_eq!(0xb91000, MOV::mov(CX, 16));
+    assert_eq!(0xba1000, MOV::mov(DX, 16));
+    assert_eq!(0xbb1000, MOV::mov(BX, 16));
+    assert_eq!(0xbc1000, MOV::mov(SP, 16));
+    assert_eq!(0xbd1000, MOV::mov(BP, 16));
+    assert_eq!(0xbe1000, MOV::mov(SI, 16));
+    assert_eq!(0xbf1000, MOV::mov(DI, 16));
+
+    assert_eq!(0xb89600, MOV::mov(AX, 150));
+    assert_eq!(0xb99600, MOV::mov(CX, 150));
+    assert_eq!(0xba9600, MOV::mov(DX, 150));
+    assert_eq!(0xbb9600, MOV::mov(BX, 150));
+    assert_eq!(0xbc9600, MOV::mov(SP, 150));
+    assert_eq!(0xbd9600, MOV::mov(BP, 150));
+    assert_eq!(0xbe9600, MOV::mov(SI, 150));
+    assert_eq!(0xbf9600, MOV::mov(DI, 150));
+
+    assert_eq!(0xb8e803, MOV::mov(AX, 1000));
+    assert_eq!(0xb9e803, MOV::mov(CX, 1000));
+    assert_eq!(0xbae803, MOV::mov(DX, 1000));
+    assert_eq!(0xbbe803, MOV::mov(BX, 1000));
+    assert_eq!(0xbce803, MOV::mov(SP, 1000));
+    assert_eq!(0xbde803, MOV::mov(BP, 1000));
+    assert_eq!(0xbee803, MOV::mov(SI, 1000));
+    assert_eq!(0xbfe803, MOV::mov(DI, 1000));
+
+    assert_eq!(0xb80080, MOV::mov(AX, 32768));
+    assert_eq!(0xb90080, MOV::mov(CX, 32768));
+    assert_eq!(0xba0080, MOV::mov(DX, 32768));
+    assert_eq!(0xbb0080, MOV::mov(BX, 32768));
+    assert_eq!(0xbc0080, MOV::mov(SP, 32768));
+    assert_eq!(0xbd0080, MOV::mov(BP, 32768));
+    assert_eq!(0xbe0080, MOV::mov(SI, 32768));
+    assert_eq!(0xbf0080, MOV::mov(DI, 32768));
+
+    assert_eq!(0xb850c3, MOV::mov(AX, 50000));
+    assert_eq!(0xb950c3, MOV::mov(CX, 50000));
+    assert_eq!(0xba50c3, MOV::mov(DX, 50000));
+    assert_eq!(0xbb50c3, MOV::mov(BX, 50000));
+    assert_eq!(0xbc50c3, MOV::mov(SP, 50000));
+    assert_eq!(0xbd50c3, MOV::mov(BP, 50000));
+    assert_eq!(0xbe50c3, MOV::mov(SI, 50000));
+    assert_eq!(0xbf50c3, MOV::mov(DI, 50000));
 }
 
 #[ignore = "unimplemented yet"]
