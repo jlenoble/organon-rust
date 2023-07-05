@@ -2,9 +2,7 @@
 //!
 //! *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 1, Section 3.4.1*
 
-use strum_macros::EnumIter;
-
-#[derive(Clone, Copy, EnumIter)]
+#[derive(Clone, Copy)]
 /// IA-32 general-purpose 32-bit registers
 pub enum IA32Reg32 {
     /// IA-32 EAX general-purpose 32-bit register
@@ -25,7 +23,7 @@ pub enum IA32Reg32 {
     EDI,
 }
 
-#[derive(Clone, Copy, EnumIter)]
+#[derive(Clone, Copy)]
 /// IA-32 general-purpose 16-bit registers
 pub enum IA32Reg16 {
     /// IA-32 AX general-purpose 16-bit register
@@ -46,7 +44,7 @@ pub enum IA32Reg16 {
     DI,
 }
 
-#[derive(Clone, Copy, EnumIter)]
+#[derive(Clone, Copy)]
 /// IA-32 general-purpose 8-bit registers
 pub enum IA32Reg8 {
     /// IA-32 AL general-purpose low-byte register
