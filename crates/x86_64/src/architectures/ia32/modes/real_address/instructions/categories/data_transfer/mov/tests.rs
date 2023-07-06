@@ -200,6 +200,42 @@ fn real_address_mode_mov_instructions_from_memory_to_gp() {
     assert_eq!(vec![0x8b, 0x2e, 0x10, 0x27], MOV::mov(BP, [10000]));
     assert_eq!(vec![0x8b, 0x36, 0x10, 0x27], MOV::mov(SI, [10000]));
     assert_eq!(vec![0x8b, 0x3e, 0x10, 0x27], MOV::mov(DI, [10000]));
+
+    assert_eq!(vec![0x8b, 0x07], MOV::mov(AX, [BX]));
+    assert_eq!(vec![0x8b, 0x0f], MOV::mov(CX, [BX]));
+    assert_eq!(vec![0x8b, 0x17], MOV::mov(DX, [BX]));
+    assert_eq!(vec![0x8b, 0x1f], MOV::mov(BX, [BX]));
+    assert_eq!(vec![0x8b, 0x27], MOV::mov(SP, [BX]));
+    assert_eq!(vec![0x8b, 0x2f], MOV::mov(BP, [BX]));
+    assert_eq!(vec![0x8b, 0x37], MOV::mov(SI, [BX]));
+    assert_eq!(vec![0x8b, 0x3f], MOV::mov(DI, [BX]));
+
+    assert_eq!(vec![0x8b, 0x46, 0x00], MOV::mov(AX, [BP]));
+    assert_eq!(vec![0x8b, 0x4e, 0x00], MOV::mov(CX, [BP]));
+    assert_eq!(vec![0x8b, 0x56, 0x00], MOV::mov(DX, [BP]));
+    assert_eq!(vec![0x8b, 0x5e, 0x00], MOV::mov(BX, [BP]));
+    assert_eq!(vec![0x8b, 0x66, 0x00], MOV::mov(SP, [BP]));
+    assert_eq!(vec![0x8b, 0x6e, 0x00], MOV::mov(BP, [BP]));
+    assert_eq!(vec![0x8b, 0x76, 0x00], MOV::mov(SI, [BP]));
+    assert_eq!(vec![0x8b, 0x7e, 0x00], MOV::mov(DI, [BP]));
+
+    assert_eq!(vec![0x8b, 0x04], MOV::mov(AX, [SI]));
+    assert_eq!(vec![0x8b, 0x0c], MOV::mov(CX, [SI]));
+    assert_eq!(vec![0x8b, 0x14], MOV::mov(DX, [SI]));
+    assert_eq!(vec![0x8b, 0x1c], MOV::mov(BX, [SI]));
+    assert_eq!(vec![0x8b, 0x24], MOV::mov(SP, [SI]));
+    assert_eq!(vec![0x8b, 0x2c], MOV::mov(BP, [SI]));
+    assert_eq!(vec![0x8b, 0x34], MOV::mov(SI, [SI]));
+    assert_eq!(vec![0x8b, 0x3c], MOV::mov(DI, [SI]));
+
+    assert_eq!(vec![0x8b, 0x05], MOV::mov(AX, [DI]));
+    assert_eq!(vec![0x8b, 0x0d], MOV::mov(CX, [DI]));
+    assert_eq!(vec![0x8b, 0x15], MOV::mov(DX, [DI]));
+    assert_eq!(vec![0x8b, 0x1d], MOV::mov(BX, [DI]));
+    assert_eq!(vec![0x8b, 0x25], MOV::mov(SP, [DI]));
+    assert_eq!(vec![0x8b, 0x2d], MOV::mov(BP, [DI]));
+    assert_eq!(vec![0x8b, 0x35], MOV::mov(SI, [DI]));
+    assert_eq!(vec![0x8b, 0x3d], MOV::mov(DI, [DI]));
 }
 
 #[ignore = "unimplemented yet"]
