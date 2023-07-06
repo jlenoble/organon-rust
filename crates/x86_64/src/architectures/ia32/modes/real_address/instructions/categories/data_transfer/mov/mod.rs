@@ -140,5 +140,42 @@ macro_rules! rr16_rr16 {
 // *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `89 /r`*
 rr16_rr16!(0x89);
 
+macro_rules! ax_mem16 {
+    ($op_code:literal) => {
+        impl Mov<AX, [u16; 1]> for MOV {
+            fn mov(_: AX, mem: [u16; 1]) -> Vec<u8> {
+                vec![$op_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
+            }
+        }
+    };
+}
+
+macro_rules! r16_mem16 {
+    ($r:ty, $op_code:literal, $reg_code:expr) => {
+        impl Mov<$r, [u16; 1]> for MOV {
+            fn mov(_: $r, mem: [u16; 1]) -> Vec<u8> {
+                vec![$op_code, $reg_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
+            }
+        }
+    };
+}
+
+macro_rules! rr16_mem16 {
+    ($ax_op_code:literal, $op_code:literal) => {
+        ax_mem16!($ax_op_code);
+        r16_mem16!(CX, $op_code, 0x0e + 0);
+        r16_mem16!(DX, $op_code, 0x0e + 8);
+        r16_mem16!(BX, $op_code, 0x0e + 16);
+        r16_mem16!(SP, $op_code, 0x0e + 24);
+        r16_mem16!(BP, $op_code, 0x0e + 32);
+        r16_mem16!(SI, $op_code, 0x0e + 40);
+        r16_mem16!(DI, $op_code, 0x0e + 48);
+    };
+}
+
+// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `A1`*
+// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `8B /r`*
+rr16_mem16!(0xa1, 0x8b);
+
 #[cfg(test)]
 mod tests;

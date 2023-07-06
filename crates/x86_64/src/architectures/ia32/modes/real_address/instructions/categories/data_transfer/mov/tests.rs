@@ -171,10 +171,35 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
     assert_eq!(vec![0x89, 0xff], MOV::mov(DI, DI));
 }
 
-#[ignore = "unimplemented yet"]
 #[test]
 fn real_address_mode_mov_instructions_from_memory_to_gp() {
-    unimplemented!();
+    // Move memory to 16-bit registers
+    assert_eq!(vec![0xa1, 0x00, 0x00], MOV::mov(AX, [0]));
+    assert_eq!(vec![0x8b, 0x0e, 0x00, 0x00], MOV::mov(CX, [0]));
+    assert_eq!(vec![0x8b, 0x16, 0x00, 0x00], MOV::mov(DX, [0]));
+    assert_eq!(vec![0x8b, 0x1e, 0x00, 0x00], MOV::mov(BX, [0]));
+    assert_eq!(vec![0x8b, 0x26, 0x00, 0x00], MOV::mov(SP, [0]));
+    assert_eq!(vec![0x8b, 0x2e, 0x00, 0x00], MOV::mov(BP, [0]));
+    assert_eq!(vec![0x8b, 0x36, 0x00, 0x00], MOV::mov(SI, [0]));
+    assert_eq!(vec![0x8b, 0x3e, 0x00, 0x00], MOV::mov(DI, [0]));
+
+    assert_eq!(vec![0xa1, 0x64, 0x00], MOV::mov(AX, [100]));
+    assert_eq!(vec![0x8b, 0x0e, 0x64, 0x00], MOV::mov(CX, [100]));
+    assert_eq!(vec![0x8b, 0x16, 0x64, 0x00], MOV::mov(DX, [100]));
+    assert_eq!(vec![0x8b, 0x1e, 0x64, 0x00], MOV::mov(BX, [100]));
+    assert_eq!(vec![0x8b, 0x26, 0x64, 0x00], MOV::mov(SP, [100]));
+    assert_eq!(vec![0x8b, 0x2e, 0x64, 0x00], MOV::mov(BP, [100]));
+    assert_eq!(vec![0x8b, 0x36, 0x64, 0x00], MOV::mov(SI, [100]));
+    assert_eq!(vec![0x8b, 0x3e, 0x64, 0x00], MOV::mov(DI, [100]));
+
+    assert_eq!(vec![0xa1, 0x10, 0x27], MOV::mov(AX, [10000]));
+    assert_eq!(vec![0x8b, 0x0e, 0x10, 0x27], MOV::mov(CX, [10000]));
+    assert_eq!(vec![0x8b, 0x16, 0x10, 0x27], MOV::mov(DX, [10000]));
+    assert_eq!(vec![0x8b, 0x1e, 0x10, 0x27], MOV::mov(BX, [10000]));
+    assert_eq!(vec![0x8b, 0x26, 0x10, 0x27], MOV::mov(SP, [10000]));
+    assert_eq!(vec![0x8b, 0x2e, 0x10, 0x27], MOV::mov(BP, [10000]));
+    assert_eq!(vec![0x8b, 0x36, 0x10, 0x27], MOV::mov(SI, [10000]));
+    assert_eq!(vec![0x8b, 0x3e, 0x10, 0x27], MOV::mov(DI, [10000]));
 }
 
 #[ignore = "unimplemented yet"]
