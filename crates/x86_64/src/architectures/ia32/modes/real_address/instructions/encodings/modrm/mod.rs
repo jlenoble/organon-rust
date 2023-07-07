@@ -4,6 +4,7 @@
 
 pub mod mod_field;
 pub mod reg_opcode_field;
+pub mod r_slash_m_field;
 
 pub use mod_field::{ Disp0, Disp8, Disp16, Reg, MOD, Mod };
 pub use reg_opcode_field::{
@@ -18,6 +19,7 @@ pub use reg_opcode_field::{
     REGOPCODE,
     RegOpcode,
 };
+pub use r_slash_m_field::{ RSLASHM, RSlashM };
 
 #[cfg(test)]
 mod tests;

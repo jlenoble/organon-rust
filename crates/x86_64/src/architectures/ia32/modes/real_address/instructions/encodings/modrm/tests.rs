@@ -11,6 +11,7 @@ use super::{
     REGOPCODE,
     RegOpcode,
 };
+use super::{ RSLASHM, RSlashM };
 
 use super::super::super::{
     operands::{ AL, CL, DL, BL },
@@ -88,10 +89,55 @@ fn test_reg_opcode_field() {
     assert_eq!(REGOPCODE::encode(Opcode7), 0b00_111_000);
 }
 
-#[ignore = "not implemented yet"]
 #[test]
 fn test_r_slash_m_field() {
-    unimplemented!()
+    assert_eq!(RSLASHM::encode(AL), 0b00000_000);
+    assert_eq!(RSLASHM::encode(AX), 0b00000_000);
+    assert_eq!(RSLASHM::encode(EAX), 0b00000_000);
+    assert_eq!(RSLASHM::encode(MM0), 0b00000_000);
+    assert_eq!(RSLASHM::encode(XMM0), 0b00000_000);
+
+    assert_eq!(RSLASHM::encode(CL), 0b00000_001);
+    assert_eq!(RSLASHM::encode(CX), 0b00000_001);
+    assert_eq!(RSLASHM::encode(ECX), 0b00000_001);
+    assert_eq!(RSLASHM::encode(MM1), 0b00000_001);
+    assert_eq!(RSLASHM::encode(XMM1), 0b00000_001);
+
+    assert_eq!(RSLASHM::encode(DL), 0b00000_010);
+    assert_eq!(RSLASHM::encode(DX), 0b00000_010);
+    assert_eq!(RSLASHM::encode(EDX), 0b00000_010);
+    assert_eq!(RSLASHM::encode(MM2), 0b00000_010);
+    assert_eq!(RSLASHM::encode(XMM2), 0b00000_010);
+
+    assert_eq!(RSLASHM::encode(BL), 0b00000_011);
+    assert_eq!(RSLASHM::encode(BX), 0b00000_011);
+    assert_eq!(RSLASHM::encode(EBX), 0b00000_011);
+    assert_eq!(RSLASHM::encode(MM3), 0b00000_011);
+    assert_eq!(RSLASHM::encode(XMM3), 0b00000_011);
+
+    assert_eq!(RSLASHM::encode(AH), 0b00000_100);
+    assert_eq!(RSLASHM::encode(SP), 0b00000_100);
+    assert_eq!(RSLASHM::encode(ESP), 0b00000_100);
+    assert_eq!(RSLASHM::encode(MM4), 0b00000_100);
+    assert_eq!(RSLASHM::encode(XMM4), 0b00000_100);
+
+    assert_eq!(RSLASHM::encode(CH), 0b00000_101);
+    assert_eq!(RSLASHM::encode(BP), 0b00000_101);
+    assert_eq!(RSLASHM::encode(EBP), 0b00000_101);
+    assert_eq!(RSLASHM::encode(MM5), 0b00000_101);
+    assert_eq!(RSLASHM::encode(XMM5), 0b00000_101);
+
+    assert_eq!(RSLASHM::encode(DH), 0b00000_110);
+    assert_eq!(RSLASHM::encode(SI), 0b00000_110);
+    assert_eq!(RSLASHM::encode(ESI), 0b00000_110);
+    assert_eq!(RSLASHM::encode(MM6), 0b00000_110);
+    assert_eq!(RSLASHM::encode(XMM6), 0b00000_110);
+
+    assert_eq!(RSLASHM::encode(BH), 0b00000_111);
+    assert_eq!(RSLASHM::encode(DI), 0b00000_111);
+    assert_eq!(RSLASHM::encode(EDI), 0b00000_111);
+    assert_eq!(RSLASHM::encode(MM7), 0b00000_111);
+    assert_eq!(RSLASHM::encode(XMM7), 0b00000_111);
 }
 
 #[ignore = "not implemented yet"]
