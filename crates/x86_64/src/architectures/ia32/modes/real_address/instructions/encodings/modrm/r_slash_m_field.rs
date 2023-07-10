@@ -15,6 +15,7 @@ pub trait RSlashM<R, R32> {
 /// r/m field in ModR/M addressing-mode encoding byte
 pub struct RSLASHM;
 
+use super::Disp16;
 use super::super::super::{
     operands::{ AL, CL, DL, BL },
     operands::{ AH, CH, DH, BH },
@@ -33,52 +34,86 @@ macro_rules! r_slash_m {
             }
         }
     };
+    ([$reg:ident], $gp32:ident) => {
+        impl RSlashM<[$reg;1], $gp32> for RSLASHM {
+            #[inline]
+            fn encode(_reg: [$reg;1]) -> u8 {
+                GPReg32::$gp32 as u8
+            }
+        }
+    };
 }
+
+/// When working with r/m field in ModR/M addressing-mode encoding byte, [BX + SI] case
+///
+/// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Table 2.1*
+pub struct BXpSI;
+/// When working with r/m field in ModR/M addressing-mode encoding byte, [BX + DI] case
+///
+/// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Table 2.1*
+pub struct BXpDI;
+/// When working with r/m field in ModR/M addressing-mode encoding byte, [BP + SI] case
+///
+/// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Table 2.1*
+pub struct BPpSI;
+/// When working with r/m field in ModR/M addressing-mode encoding byte, [BP + DI] case
+///
+/// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Table 2.1*
+pub struct BPpDI;
 
 r_slash_m!(AL, EAX);
 r_slash_m!(AX, EAX);
 r_slash_m!(EAX, EAX);
 r_slash_m!(MM0, EAX);
 r_slash_m!(XMM0, EAX);
+r_slash_m!([BXpSI], EAX);
 
 r_slash_m!(CL, ECX);
 r_slash_m!(CX, ECX);
 r_slash_m!(ECX, ECX);
 r_slash_m!(MM1, ECX);
 r_slash_m!(XMM1, ECX);
+r_slash_m!([BXpDI], ECX);
 
 r_slash_m!(DL, EDX);
 r_slash_m!(DX, EDX);
 r_slash_m!(EDX, EDX);
 r_slash_m!(MM2, EDX);
 r_slash_m!(XMM2, EDX);
+r_slash_m!([BPpSI], EDX);
 
 r_slash_m!(BL, EBX);
 r_slash_m!(BX, EBX);
 r_slash_m!(EBX, EBX);
 r_slash_m!(MM3, EBX);
 r_slash_m!(XMM3, EBX);
+r_slash_m!([BPpDI], EBX);
 
 r_slash_m!(AH, ESP);
 r_slash_m!(SP, ESP);
 r_slash_m!(ESP, ESP);
 r_slash_m!(MM4, ESP);
 r_slash_m!(XMM4, ESP);
+r_slash_m!([SI], ESP);
 
 r_slash_m!(CH, EBP);
 r_slash_m!(BP, EBP);
 r_slash_m!(EBP, EBP);
 r_slash_m!(MM5, EBP);
 r_slash_m!(XMM5, EBP);
+r_slash_m!([DI], EBP);
 
 r_slash_m!(DH, ESI);
 r_slash_m!(SI, ESI);
 r_slash_m!(ESI, ESI);
 r_slash_m!(MM6, ESI);
 r_slash_m!(XMM6, ESI);
+r_slash_m!(Disp16, ESI);
+r_slash_m!([BP], ESI);
 
 r_slash_m!(BH, EDI);
 r_slash_m!(DI, EDI);
 r_slash_m!(EDI, EDI);
 r_slash_m!(MM7, EDI);
 r_slash_m!(XMM7, EDI);
+r_slash_m!([BX], EDI);

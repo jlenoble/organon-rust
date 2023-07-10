@@ -11,7 +11,7 @@ use super::{
     REGOPCODE,
     RegOpcode,
 };
-use super::{ RSLASHM, RSlashM };
+use super::{ BXpSI, BXpDI, BPpSI, BPpDI, RSLASHM, RSlashM };
 
 use super::super::super::{
     operands::{ AL, CL, DL, BL },
@@ -91,6 +91,16 @@ fn test_reg_opcode_field() {
 
 #[test]
 fn test_r_slash_m_field() {
+    assert_eq!(RSLASHM::encode([BXpSI]), 0b00000_000);
+    assert_eq!(RSLASHM::encode([BXpDI]), 0b00000_001);
+    assert_eq!(RSLASHM::encode([BPpSI]), 0b00000_010);
+    assert_eq!(RSLASHM::encode([BPpDI]), 0b00000_011);
+    assert_eq!(RSLASHM::encode([SI]), 0b00000_100);
+    assert_eq!(RSLASHM::encode([DI]), 0b00000_101);
+    assert_eq!(RSLASHM::encode(Disp16), 0b00000_110);
+    assert_eq!(RSLASHM::encode([BP]), 0b00000_110);
+    assert_eq!(RSLASHM::encode([BX]), 0b00000_111);
+
     assert_eq!(RSLASHM::encode(AL), 0b00000_000);
     assert_eq!(RSLASHM::encode(AX), 0b00000_000);
     assert_eq!(RSLASHM::encode(EAX), 0b00000_000);
@@ -143,5 +153,5 @@ fn test_r_slash_m_field() {
 #[ignore = "not implemented yet"]
 #[test]
 fn test_mod_r_slash_m() {
-    unimplemented!()
+    unimplemented!();
 }

@@ -19,7 +19,7 @@ pub use reg_opcode_field::{
     REGOPCODE,
     RegOpcode,
 };
-pub use r_slash_m_field::{ RSLASHM, RSlashM };
+pub use r_slash_m_field::{ BXpSI, BXpDI, BPpSI, BPpDI, RSLASHM, RSlashM };
 
 #[cfg(test)]
 mod tests;
