@@ -5,6 +5,7 @@
 pub mod mod_field;
 pub mod reg_opcode_field;
 pub mod r_slash_m_field;
+pub mod modrm;
 
 pub use mod_field::{ Disp0, Disp8, Disp16, Reg, MOD, Mod };
 pub use reg_opcode_field::{
@@ -20,6 +21,7 @@ pub use reg_opcode_field::{
     RegOpcode,
 };
 pub use r_slash_m_field::{ BXpSI, BXpDI, BPpSI, BPpDI, RSLASHM, RSlashM };
+pub use modrm::{ MODRM, ModRM };
 
 #[cfg(test)]
 mod tests;
