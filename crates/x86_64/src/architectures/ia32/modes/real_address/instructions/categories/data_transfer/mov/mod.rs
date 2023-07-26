@@ -24,6 +24,7 @@ pub struct MOV;
 macro_rules! r8_imm8 {
     ($r:ty, $op_code:expr) => {
         impl Mov<$r, Imm8> for MOV {
+            #[inline]
             fn mov(_: $r, imm: Imm8) -> Vec<u8> {
                 vec![$op_code, imm.0]
             }
@@ -50,6 +51,7 @@ rr8_imm8!(0xb0);
 macro_rules! r16_imm16 {
     ($r:ty, $op_code:expr) => {
         impl Mov<$r, Imm16> for MOV {
+            #[inline]
             fn mov(_: $r, imm: Imm16) -> Vec<u8> {
                 vec![$op_code, (imm.0 & 0xff) as u8, ((imm.0 & 0xff00) >> 8) as u8]
             }
