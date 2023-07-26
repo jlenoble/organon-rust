@@ -7,6 +7,7 @@ use super::super::super::{
     operands::{ AL, CL, DL, BL },
     operands::{ AH, CH, DH, BH },
     operands::{ AX, CX, DX, BX, SP, BP, SI, DI },
+    encodings::modrm::{ Reg, MODRM, ModRM },
 };
 
 /// Trait encompassing all IA-32 real-address mode MOV instruction variants
@@ -73,38 +74,39 @@ macro_rules! rr16_imm16 {
 rr16_imm16!(0xb8);
 
 macro_rules! r_r {
-    ($r1:ty, $r2:ty, $op_code:literal, $rr_code:expr) => {
+    ($r1:tt, $r2:tt, $op_code:literal) => {
         impl Mov<$r1, $r2> for MOV {
+            #[inline]
             fn mov(_r1: $r1, _r2: $r2)-> Vec<u8> {
-                vec![$op_code, $rr_code]
+                vec![$op_code, MODRM::encode(Reg, $r2, $r1)]
             }
         }
     };
 }
 
 macro_rules! rr8_r8 {
-    ($r2:ty, $op_code:literal, $r2_code:literal) => {
-        r_r!(AL, $r2, $op_code, 0xc0 + $r2_code);
-        r_r!(CL, $r2, $op_code, 0xc1 + $r2_code);
-        r_r!(DL, $r2, $op_code, 0xc2 + $r2_code);
-        r_r!(BL, $r2, $op_code, 0xc3 + $r2_code);
-        r_r!(AH, $r2, $op_code, 0xc4 + $r2_code);
-        r_r!(CH, $r2, $op_code, 0xc5 + $r2_code);
-        r_r!(DH, $r2, $op_code, 0xc6 + $r2_code);
-        r_r!(BH, $r2, $op_code, 0xc7 + $r2_code);
+    ($r2:tt, $op_code:literal) => {
+        r_r!(AL, $r2, $op_code);
+        r_r!(CL, $r2, $op_code);
+        r_r!(DL, $r2, $op_code);
+        r_r!(BL, $r2, $op_code);
+        r_r!(AH, $r2, $op_code);
+        r_r!(CH, $r2, $op_code);
+        r_r!(DH, $r2, $op_code);
+        r_r!(BH, $r2, $op_code);
     };
 }
 
 macro_rules! rr8_rr8 {
     ($op_code:literal) => {
-        rr8_r8!(AL, $op_code, 0);
-        rr8_r8!(CL, $op_code, 8);
-        rr8_r8!(DL, $op_code, 16);
-        rr8_r8!(BL, $op_code, 24);
-        rr8_r8!(AH, $op_code, 32);
-        rr8_r8!(CH, $op_code, 40);
-        rr8_r8!(DH, $op_code, 48);
-        rr8_r8!(BH, $op_code, 56);
+        rr8_r8!(AL, $op_code);
+        rr8_r8!(CL, $op_code);
+        rr8_r8!(DL, $op_code);
+        rr8_r8!(BL, $op_code);
+        rr8_r8!(AH, $op_code);
+        rr8_r8!(CH, $op_code);
+        rr8_r8!(DH, $op_code);
+        rr8_r8!(BH, $op_code);
     };
 }
 
@@ -112,28 +114,28 @@ macro_rules! rr8_rr8 {
 rr8_rr8!(0x88);
 
 macro_rules! rr16_r16 {
-    ($r2:ty, $op_code:literal, $r2_code:literal) => {
-        r_r!(AX, $r2, $op_code, 0xc0 + $r2_code);
-        r_r!(CX, $r2, $op_code, 0xc1 + $r2_code);
-        r_r!(DX, $r2, $op_code, 0xc2 + $r2_code);
-        r_r!(BX, $r2, $op_code, 0xc3 + $r2_code);
-        r_r!(SP, $r2, $op_code, 0xc4 + $r2_code);
-        r_r!(BP, $r2, $op_code, 0xc5 + $r2_code);
-        r_r!(SI, $r2, $op_code, 0xc6 + $r2_code);
-        r_r!(DI, $r2, $op_code, 0xc7 + $r2_code);
+    ($r2:tt, $op_code:literal) => {
+        r_r!(AX, $r2, $op_code);
+        r_r!(CX, $r2, $op_code);
+        r_r!(DX, $r2, $op_code);
+        r_r!(BX, $r2, $op_code);
+        r_r!(SP, $r2, $op_code);
+        r_r!(BP, $r2, $op_code);
+        r_r!(SI, $r2, $op_code);
+        r_r!(DI, $r2, $op_code);
     };
 }
 
 macro_rules! rr16_rr16 {
     ($op_code:literal) => {
-        rr16_r16!(AX, $op_code, 0);
-        rr16_r16!(CX, $op_code, 8);
-        rr16_r16!(DX, $op_code, 16);
-        rr16_r16!(BX, $op_code, 24);
-        rr16_r16!(SP, $op_code, 32);
-        rr16_r16!(BP, $op_code, 40);
-        rr16_r16!(SI, $op_code, 48);
-        rr16_r16!(DI, $op_code, 56);
+        rr16_r16!(AX, $op_code);
+        rr16_r16!(CX, $op_code);
+        rr16_r16!(DX, $op_code);
+        rr16_r16!(BX, $op_code);
+        rr16_r16!(SP, $op_code);
+        rr16_r16!(BP, $op_code);
+        rr16_r16!(SI, $op_code);
+        rr16_r16!(DI, $op_code);
     };
 }
 
