@@ -147,6 +147,7 @@ rr16_rr16!(0x89);
 macro_rules! r16_mem16_num {
     (AX, $op_code:literal, $reg_code:expr) => {
         impl Mov<AX, [u16; 1]> for MOV {
+            #[inline]
             fn mov(_: AX, mem: [u16; 1]) -> Vec<u8> {
                 vec![$op_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
             }
@@ -154,6 +155,7 @@ macro_rules! r16_mem16_num {
     };
     ($r:ty, $op_code:literal, $reg_code:expr) => {
         impl Mov<$r, [u16; 1]> for MOV {
+            #[inline]
             fn mov(_: $r, mem: [u16; 1]) -> Vec<u8> {
                 vec![$op_code, $reg_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
             }
@@ -181,6 +183,7 @@ rr16_mem16_num!(0xa1, 0x8b);
 macro_rules! r16_mem16_reg {
     ($r1:ty, BP, $op_code:literal, $reg_code:expr) => {
         impl Mov<$r1, [BP; 1]> for MOV {
+            #[inline]
             fn mov(_: $r1, _mem: [BP; 1]) -> Vec<u8> {
                 vec![$op_code, $reg_code, 0x00]
             }
@@ -188,6 +191,7 @@ macro_rules! r16_mem16_reg {
     };
     ($r1:ty, $r2:ty, $op_code:literal, $reg_code:expr) => {
         impl Mov<$r1, [$r2; 1]> for MOV {
+        #[inline]
             fn mov(_: $r1, _mem: [$r2; 1]) -> Vec<u8> {
                 vec![$op_code, $reg_code]
             }
