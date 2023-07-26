@@ -7,7 +7,7 @@ use super::super::super::{
     operands::{ AL, CL, DL, BL },
     operands::{ AH, CH, DH, BH },
     operands::{ AX, CX, DX, BX, SP, BP, SI, DI },
-    encodings::modrm::{ Reg, MODRM, ModRM },
+    encodings::modrm::{ Reg, Disp0, Disp16, MODRM, ModRM },
 };
 
 /// Trait encompassing all IA-32 real-address mode MOV instruction variants
@@ -145,7 +145,7 @@ macro_rules! rr16_rr16 {
 rr16_rr16!(0x89);
 
 macro_rules! r16_mem16_num {
-    (AX, $op_code:literal, $reg_code:expr) => {
+    (AX, $op_code:literal) => {
         impl Mov<AX, [u16; 1]> for MOV {
             #[inline]
             fn mov(_: AX, mem: [u16; 1]) -> Vec<u8> {
@@ -153,11 +153,11 @@ macro_rules! r16_mem16_num {
             }
         }
     };
-    ($r:ty, $op_code:literal, $reg_code:expr) => {
+    ($r:tt, $op_code:literal) => {
         impl Mov<$r, [u16; 1]> for MOV {
             #[inline]
             fn mov(_: $r, mem: [u16; 1]) -> Vec<u8> {
-                vec![$op_code, $reg_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
+                vec![$op_code, MODRM::encode(Disp0, $r, Disp16), (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
             }
         }
     };
@@ -165,14 +165,14 @@ macro_rules! r16_mem16_num {
 
 macro_rules! rr16_mem16_num {
     ($ax_op_code:literal, $op_code:literal) => {
-        r16_mem16_num!(AX, $ax_op_code, 0x06 + 0);
-        r16_mem16_num!(CX, $op_code, 0x06 + 8);
-        r16_mem16_num!(DX, $op_code, 0x06 + 16);
-        r16_mem16_num!(BX, $op_code, 0x06 + 24);
-        r16_mem16_num!(SP, $op_code, 0x06 + 32);
-        r16_mem16_num!(BP, $op_code, 0x06 + 40);
-        r16_mem16_num!(SI, $op_code, 0x06 + 48);
-        r16_mem16_num!(DI, $op_code, 0x06 + 56);
+        r16_mem16_num!(AX, $ax_op_code);
+        r16_mem16_num!(CX, $op_code);
+        r16_mem16_num!(DX, $op_code);
+        r16_mem16_num!(BX, $op_code);
+        r16_mem16_num!(SP, $op_code);
+        r16_mem16_num!(BP, $op_code);
+        r16_mem16_num!(SI, $op_code);
+        r16_mem16_num!(DI, $op_code);
     };
 }
 
