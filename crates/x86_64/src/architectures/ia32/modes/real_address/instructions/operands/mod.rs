@@ -2,8 +2,10 @@
 
 pub mod immediate;
 pub mod register;
+pub mod relative;
 
 pub use immediate::{ Imm8, Imm16 };
+pub use relative::{ Rel8, Rel16 };
 
 pub use register::{ AL, CL, DL, BL };
 pub use register::{ AH, CH, DH, BH };
