@@ -10,7 +10,7 @@ pub struct MBR {
 }
 
 impl MBR {
-    /// Constructor for Master Boot record
+    /// Constructor for master boot record
     pub fn new() -> MBR {
         let mut buf: [u8; MBR_SIZE] = [0; MBR_SIZE];
         buf[MBR_SIZE - 2] = 0x55;
@@ -22,7 +22,7 @@ impl MBR {
         }
     }
 
-    /// Push instruction to Master Boot Record
+    /// Push instruction to master boot record
     pub fn push(&mut self, instr: Vec<u8>) {
         self.buffer[self.current_position..self.current_position + instr.len()].copy_from_slice(
             instr.as_slice()
