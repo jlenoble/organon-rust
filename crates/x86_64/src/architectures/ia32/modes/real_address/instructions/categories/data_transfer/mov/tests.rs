@@ -173,6 +173,25 @@ fn real_address_mode_mov_instructions_from_gp_to_gp() {
 
 #[test]
 fn real_address_mode_mov_instructions_from_memory_to_gp() {
+    // Move memory to 8-bit registers
+    assert_eq!(vec![0xa0, 0x00, 0x00], MOV::mov(AL, [0]));
+    assert_eq!(vec![0x8a, 0x0e, 0x00, 0x00], MOV::mov(CL, [0]));
+    assert_eq!(vec![0x8a, 0x16, 0x00, 0x00], MOV::mov(DL, [0]));
+    assert_eq!(vec![0x8a, 0x1e, 0x00, 0x00], MOV::mov(BL, [0]));
+    assert_eq!(vec![0x8a, 0x26, 0x00, 0x00], MOV::mov(AH, [0]));
+    assert_eq!(vec![0x8a, 0x2e, 0x00, 0x00], MOV::mov(CH, [0]));
+    assert_eq!(vec![0x8a, 0x36, 0x00, 0x00], MOV::mov(DH, [0]));
+    assert_eq!(vec![0x8a, 0x3e, 0x00, 0x00], MOV::mov(BH, [0]));
+
+    assert_eq!(vec![0xa0, 0x64, 0x00], MOV::mov(AL, [100]));
+    assert_eq!(vec![0x8a, 0x0e, 0x64, 0x00], MOV::mov(CL, [100]));
+    assert_eq!(vec![0x8a, 0x16, 0x64, 0x00], MOV::mov(DL, [100]));
+    assert_eq!(vec![0x8a, 0x1e, 0x64, 0x00], MOV::mov(BL, [100]));
+    assert_eq!(vec![0x8a, 0x26, 0x64, 0x00], MOV::mov(AH, [100]));
+    assert_eq!(vec![0x8a, 0x2e, 0x64, 0x00], MOV::mov(CH, [100]));
+    assert_eq!(vec![0x8a, 0x36, 0x64, 0x00], MOV::mov(DH, [100]));
+    assert_eq!(vec![0x8a, 0x3e, 0x64, 0x00], MOV::mov(BH, [100]));
+
     // Move memory to 16-bit registers
     assert_eq!(vec![0xa1, 0x00, 0x00], MOV::mov(AX, [0]));
     assert_eq!(vec![0x8b, 0x0e, 0x00, 0x00], MOV::mov(CX, [0]));
