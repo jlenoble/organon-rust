@@ -201,6 +201,42 @@ fn real_address_mode_mov_instructions_from_memory_to_gp() {
     assert_eq!(vec![0x8a, 0x36, 0x10, 0x27], MOV::mov(DH, [10000]));
     assert_eq!(vec![0x8a, 0x3e, 0x10, 0x27], MOV::mov(BH, [10000]));
 
+    assert_eq!(vec![0x8a, 0x07], MOV::mov(AL, [BX]));
+    assert_eq!(vec![0x8a, 0x0f], MOV::mov(CL, [BX]));
+    assert_eq!(vec![0x8a, 0x17], MOV::mov(DL, [BX]));
+    assert_eq!(vec![0x8a, 0x1f], MOV::mov(BL, [BX]));
+    assert_eq!(vec![0x8a, 0x27], MOV::mov(AH, [BX]));
+    assert_eq!(vec![0x8a, 0x2f], MOV::mov(CH, [BX]));
+    assert_eq!(vec![0x8a, 0x37], MOV::mov(DH, [BX]));
+    assert_eq!(vec![0x8a, 0x3f], MOV::mov(BH, [BX]));
+
+    assert_eq!(vec![0x8a, 0x46, 0x00], MOV::mov(AL, [BP]));
+    assert_eq!(vec![0x8a, 0x4e, 0x00], MOV::mov(CL, [BP]));
+    assert_eq!(vec![0x8a, 0x56, 0x00], MOV::mov(DL, [BP]));
+    assert_eq!(vec![0x8a, 0x5e, 0x00], MOV::mov(BL, [BP]));
+    assert_eq!(vec![0x8a, 0x66, 0x00], MOV::mov(AH, [BP]));
+    assert_eq!(vec![0x8a, 0x6e, 0x00], MOV::mov(CH, [BP]));
+    assert_eq!(vec![0x8a, 0x76, 0x00], MOV::mov(DH, [BP]));
+    assert_eq!(vec![0x8a, 0x7e, 0x00], MOV::mov(BH, [BP]));
+
+    assert_eq!(vec![0x8a, 0x04], MOV::mov(AL, [SI]));
+    assert_eq!(vec![0x8a, 0x0c], MOV::mov(CL, [SI]));
+    assert_eq!(vec![0x8a, 0x14], MOV::mov(DL, [SI]));
+    assert_eq!(vec![0x8a, 0x1c], MOV::mov(BL, [SI]));
+    assert_eq!(vec![0x8a, 0x24], MOV::mov(AH, [SI]));
+    assert_eq!(vec![0x8a, 0x2c], MOV::mov(CH, [SI]));
+    assert_eq!(vec![0x8a, 0x34], MOV::mov(DH, [SI]));
+    assert_eq!(vec![0x8a, 0x3c], MOV::mov(BH, [SI]));
+
+    assert_eq!(vec![0x8a, 0x05], MOV::mov(AL, [DI]));
+    assert_eq!(vec![0x8a, 0x0d], MOV::mov(CL, [DI]));
+    assert_eq!(vec![0x8a, 0x15], MOV::mov(DL, [DI]));
+    assert_eq!(vec![0x8a, 0x1d], MOV::mov(BL, [DI]));
+    assert_eq!(vec![0x8a, 0x25], MOV::mov(AH, [DI]));
+    assert_eq!(vec![0x8a, 0x2d], MOV::mov(CH, [DI]));
+    assert_eq!(vec![0x8a, 0x35], MOV::mov(DH, [DI]));
+    assert_eq!(vec![0x8a, 0x3d], MOV::mov(BH, [DI]));
+
     // Move memory to 16-bit registers
     assert_eq!(vec![0xa1, 0x00, 0x00], MOV::mov(AX, [0]));
     assert_eq!(vec![0x8b, 0x0e, 0x00, 0x00], MOV::mov(CX, [0]));

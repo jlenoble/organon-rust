@@ -205,7 +205,7 @@ macro_rules! rr16_mem16_num {
 // *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `8B /r`*
 rr16_mem16_num!(0xa1, 0x8b);
 
-macro_rules! r16_mem16_reg {
+macro_rules! r_mem_reg {
     ($r1:tt, BP, $op_code:literal) => {
         impl Mov<$r1, [BP; 1]> for MOV {
             #[inline]
@@ -224,16 +224,37 @@ macro_rules! r16_mem16_reg {
     };
 }
 
+macro_rules! rr8_mem8_reg {
+    ($r2:tt, $op_code:literal) => {
+        r_mem_reg!(AL, $r2, $op_code);
+        r_mem_reg!(CL, $r2, $op_code);
+        r_mem_reg!(DL, $r2, $op_code);
+        r_mem_reg!(BL, $r2, $op_code);
+        r_mem_reg!(AH, $r2, $op_code);
+        r_mem_reg!(CH, $r2, $op_code);
+        r_mem_reg!(DH, $r2, $op_code);
+        r_mem_reg!(BH, $r2, $op_code);
+    };
+}
+
+// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `8A /r`*
+rr8_mem8_reg!(BX, 0x8a);
+rr8_mem8_reg!(SI, 0x8a);
+rr8_mem8_reg!(DI, 0x8a);
+
+// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 4.3#MOV line `8A /r`*
+rr8_mem8_reg!(BP, 0x8a);
+
 macro_rules! rr16_mem16_reg {
     ($r2:tt, $op_code:literal) => {
-        r16_mem16_reg!(AX, $r2, $op_code);
-        r16_mem16_reg!(CX, $r2, $op_code);
-        r16_mem16_reg!(DX, $r2, $op_code);
-        r16_mem16_reg!(BX, $r2, $op_code);
-        r16_mem16_reg!(SP, $r2, $op_code);
-        r16_mem16_reg!(BP, $r2, $op_code);
-        r16_mem16_reg!(SI, $r2, $op_code);
-        r16_mem16_reg!(DI, $r2, $op_code);
+        r_mem_reg!(AX, $r2, $op_code);
+        r_mem_reg!(CX, $r2, $op_code);
+        r_mem_reg!(DX, $r2, $op_code);
+        r_mem_reg!(BX, $r2, $op_code);
+        r_mem_reg!(SP, $r2, $op_code);
+        r_mem_reg!(BP, $r2, $op_code);
+        r_mem_reg!(SI, $r2, $op_code);
+        r_mem_reg!(DI, $r2, $op_code);
     };
 }
 
