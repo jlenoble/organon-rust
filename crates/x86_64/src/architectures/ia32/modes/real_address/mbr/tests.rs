@@ -13,7 +13,7 @@ use super::{
 
 // *ref. https://github.com/cfenollosa/os-tutorial/tree/master/01-bootsector-barebones*
 #[test]
-fn boot_sector_simple() {
+fn bootsector_barebones() {
     let mut mbr = MBR::new();
 
     let mut buf: [u8; 512] = [0; 512];
@@ -36,7 +36,7 @@ fn boot_sector_simple() {
 
 // *ref. https://github.com/cfenollosa/os-tutorial/tree/master/02-bootsector-print*
 #[test]
-fn boot_sector_hello() {
+fn bootsector_print() {
     let mut mbr = MBR::new();
 
     let mut buf: [u8; 512] = [0; 512];
