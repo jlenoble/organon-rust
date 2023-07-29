@@ -146,18 +146,18 @@ rr16_rr16!(0x89);
 
 macro_rules! r8_mem8_num {
     (AL, $op_code:literal) => {
-        impl Mov<AL, [u8; 1]> for MOV {
+        impl Mov<AL, [u16; 1]> for MOV {
             #[inline]
-            fn mov(_: AL, mem: [u8; 1]) -> Vec<u8> {
-                vec![$op_code, mem[0], 0x00]
+            fn mov(_: AL, mem: [u16; 1]) -> Vec<u8> {
+                vec![$op_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
             }
         }
     };
     ($r:tt, $op_code:literal) => {
-        impl Mov<$r, [u8; 1]> for MOV {
+        impl Mov<$r, [u16; 1]> for MOV {
             #[inline]
-            fn mov(_: $r, mem: [u8; 1]) -> Vec<u8> {
-                vec![$op_code, MODRM::encode(Disp0, $r, Disp16), mem[0], 0x00]
+            fn mov(_: $r, mem: [u16; 1]) -> Vec<u8> {
+                vec![$op_code, MODRM::encode(Disp0, $r, Disp16), (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
             }
         }
     };

@@ -192,6 +192,15 @@ fn real_address_mode_mov_instructions_from_memory_to_gp() {
     assert_eq!(vec![0x8a, 0x36, 0x64, 0x00], MOV::mov(DH, [100]));
     assert_eq!(vec![0x8a, 0x3e, 0x64, 0x00], MOV::mov(BH, [100]));
 
+    assert_eq!(vec![0xa0, 0x10, 0x27], MOV::mov(AL, [10000]));
+    assert_eq!(vec![0x8a, 0x0e, 0x10, 0x27], MOV::mov(CL, [10000]));
+    assert_eq!(vec![0x8a, 0x16, 0x10, 0x27], MOV::mov(DL, [10000]));
+    assert_eq!(vec![0x8a, 0x1e, 0x10, 0x27], MOV::mov(BL, [10000]));
+    assert_eq!(vec![0x8a, 0x26, 0x10, 0x27], MOV::mov(AH, [10000]));
+    assert_eq!(vec![0x8a, 0x2e, 0x10, 0x27], MOV::mov(CH, [10000]));
+    assert_eq!(vec![0x8a, 0x36, 0x10, 0x27], MOV::mov(DH, [10000]));
+    assert_eq!(vec![0x8a, 0x3e, 0x10, 0x27], MOV::mov(BH, [10000]));
+
     // Move memory to 16-bit registers
     assert_eq!(vec![0xa1, 0x00, 0x00], MOV::mov(AX, [0]));
     assert_eq!(vec![0x8b, 0x0e, 0x00, 0x00], MOV::mov(CX, [0]));
