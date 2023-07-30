@@ -10,7 +10,7 @@ impl ASM {
     ///
     /// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 3.2#INT*
     #[inline]
-    pub fn int(inter: Imm8) -> Vec<u8> {
+    pub fn int(&self, inter: Imm8) -> Vec<u8> {
         vec![0xcd, inter.0]
     }
 }

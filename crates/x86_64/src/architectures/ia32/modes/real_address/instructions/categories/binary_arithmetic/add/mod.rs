@@ -16,14 +16,14 @@ pub trait Add<Dest, Src> {
     /// generic real-address mode ADD instruction
     ///
     /// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 3.2#ADD*
-    fn add(dest: Dest, src: Src) -> Vec<u8>;
+    fn add(&self, dest: Dest, src: Src) -> Vec<u8>;
 }
 
 macro_rules! r_imm {
     (AL, $op_code:expr) => {
         impl Add<AL, Imm8> for ASM {
             #[inline]
-            fn add(_: AL, imm: Imm8) -> Vec<u8> {
+            fn add(&self, _: AL, imm: Imm8) -> Vec<u8> {
                 vec![$op_code, imm.0]
             }
         }
@@ -31,7 +31,7 @@ macro_rules! r_imm {
     (AX, $op_code:expr) => {
         impl Add<AX, Imm16> for ASM {
             #[inline]
-            fn add(_: AX, imm: Imm16) -> Vec<u8> {
+            fn add(&self, _: AX, imm: Imm16) -> Vec<u8> {
                 vec![$op_code, (imm.0 & 0xff) as u8, ((imm.0 & 0xff00) >> 8) as u8]
             }
         }
@@ -39,7 +39,7 @@ macro_rules! r_imm {
     ($r:ty, $op_code:expr, Imm8) => {
         impl Add<$r, Imm8> for ASM {
             #[inline]
-            fn add(reg: $r, imm: Imm8) -> Vec<u8> {
+            fn add(&self, reg: $r, imm: Imm8) -> Vec<u8> {
                 vec![$op_code, MODRM::encode(Reg, Opcode0, reg), imm.0]
             }
         }
@@ -47,7 +47,7 @@ macro_rules! r_imm {
     ($r:ty, $op_code:expr, Imm16) => {
         impl Add<$r, Imm16> for ASM {
             #[inline]
-            fn add(reg: $r, imm: Imm16) -> Vec<u8> {
+            fn add(&self, reg: $r, imm: Imm16) -> Vec<u8> {
                 vec![$op_code, MODRM::encode(Reg, Opcode0, reg), (imm.0 & 0xff) as u8, ((imm.0 & 0xff00) >> 8) as u8]
             }
         }

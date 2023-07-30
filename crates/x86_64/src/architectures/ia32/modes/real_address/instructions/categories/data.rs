@@ -9,7 +9,7 @@ impl ASM {
     ///
     /// *ref. https://www.nasm.us/doc/nasmdoc3.html#section-3.2.1*
     #[inline]
-    pub fn db(arg: u8) -> Vec<u8> {
+    pub fn db(&self, arg: u8) -> Vec<u8> {
         vec![arg]
     }
 
@@ -17,7 +17,7 @@ impl ASM {
     ///
     /// *ref. https://www.nasm.us/doc/nasmdoc3.html#section-3.2.1*
     #[inline]
-    pub fn dw(arg: u16) -> Vec<u8> {
+    pub fn dw(&self, arg: u16) -> Vec<u8> {
         vec![(arg & 0xff) as u8, ((arg & 0xff00) >> 8) as u8]
     }
 }

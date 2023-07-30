@@ -9,13 +9,13 @@ pub trait Jmp<Dest> {
     /// generic real-address mode JMP instruction
     ///
     /// *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 3.2#JMP*
-    fn jmp(dest: Dest) -> Vec<u8>;
+    fn jmp(&self, dest: Dest) -> Vec<u8>;
 }
 
 // *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 3.2#JMP line `EB cb`*
 impl Jmp<Rel8> for ASM {
     #[inline]
-    fn jmp(dest: Rel8) -> Vec<u8> {
+    fn jmp(&self, dest: Rel8) -> Vec<u8> {
         vec![0xeb, dest.0 as u8]
     }
 }
@@ -23,7 +23,7 @@ impl Jmp<Rel8> for ASM {
 // *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Section 3.2#JMP line `E9 cw`*
 impl Jmp<Rel16> for ASM {
     #[inline]
-    fn jmp(dest: Rel16) -> Vec<u8> {
+    fn jmp(&self, dest: Rel16) -> Vec<u8> {
         vec![0xe9, (dest.0 & 0xff) as u8, (((dest.0 as u16) & 0xff00) >> 8) as u8]
     }
 }

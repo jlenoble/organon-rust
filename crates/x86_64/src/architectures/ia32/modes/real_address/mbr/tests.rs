@@ -25,7 +25,9 @@ fn bootsector_barebones() {
     buf[510] = 0x55;
     buf[511] = 0xaa;
 
-    mbr.push(ASM::jmp(Rel16(-3)));
+    let asm = ASM::new();
+
+    mbr.push(asm.jmp(Rel16(-3)));
 
     assert_eq!(
         MBR {
@@ -80,17 +82,19 @@ fn bootsector_print() {
     buf[21] = 0xfd;
     buf[22] = 0xff;
 
-    mbr.push(ASM::mov(AH, Imm8(0x0e)));
-    mbr.push(ASM::mov(AL, Imm8(b'H')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'e')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'l')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'o')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::jmp(Rel16(-3)));
+    let asm = ASM::new();
+
+    mbr.push(asm.mov(AH, Imm8(0x0e)));
+    mbr.push(asm.mov(AL, Imm8(b'H')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'e')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'l')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'o')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.jmp(Rel16(-3)));
 
     assert_eq!(
         MBR {
@@ -181,27 +185,29 @@ fn bootsector_memory() {
     // the_secret: db "X"
     buf[45] = b'X';
 
-    mbr.push(ASM::mov(AH, Imm8(0x0e)));
-    mbr.push(ASM::mov(AL, Imm8(b'1')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(0x2d)));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'2')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, [0x2d]));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'3')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(BX, Imm16(0x2d)));
-    mbr.push(ASM::add(BX, Imm16(0x7c00)));
-    mbr.push(ASM::mov(AL, [BX]));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, Imm8(b'4')));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::mov(AL, [0x7c2d]));
-    mbr.push(ASM::int(Imm8(0x10)));
-    mbr.push(ASM::jmp(Rel8(-2)));
-    mbr.push(ASM::db(b'X'));
+    let asm = ASM::new();
+
+    mbr.push(asm.mov(AH, Imm8(0x0e)));
+    mbr.push(asm.mov(AL, Imm8(b'1')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(0x2d)));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'2')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, [0x2d]));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'3')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(BX, Imm16(0x2d)));
+    mbr.push(asm.add(BX, Imm16(0x7c00)));
+    mbr.push(asm.mov(AL, [BX]));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, Imm8(b'4')));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.mov(AL, [0x7c2d]));
+    mbr.push(asm.int(Imm8(0x10)));
+    mbr.push(asm.jmp(Rel8(-2)));
+    mbr.push(asm.db(b'X'));
 
     assert_eq!(
         MBR {
