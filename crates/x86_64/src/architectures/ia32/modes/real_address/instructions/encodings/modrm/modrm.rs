@@ -3,7 +3,18 @@
 //! *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 2, Table 2.1*
 
 use super::{ Reg, Disp0, Disp8, Disp16, MOD, Mod };
-use super::{ REGOPCODE, RegOpcode };
+use super::{
+    REGOPCODE,
+    RegOpcode,
+    Opcode0,
+    Opcode1,
+    Opcode2,
+    Opcode3,
+    Opcode4,
+    Opcode5,
+    Opcode6,
+    Opcode7,
+};
 use super::{ BXpSI, BXpDI, BPpSI, BPpDI, RSLASHM, RSlashM };
 
 use super::super::super::{
@@ -50,41 +61,49 @@ macro_rules! mod_rm {
         mod_ro_rm!($md, EAX, $rm);
         mod_ro_rm!($md, MM0, $rm);
         mod_ro_rm!($md, XMM0, $rm);
+        mod_ro_rm!($md, Opcode0, $rm);
         mod_ro_rm!($md, CL, $rm);
         mod_ro_rm!($md, CX, $rm);
         mod_ro_rm!($md, ECX, $rm);
         mod_ro_rm!($md, MM1, $rm);
         mod_ro_rm!($md, XMM1, $rm);
+        mod_ro_rm!($md, Opcode1, $rm);
         mod_ro_rm!($md, DL, $rm);
         mod_ro_rm!($md, DX, $rm);
         mod_ro_rm!($md, EDX, $rm);
         mod_ro_rm!($md, MM2, $rm);
         mod_ro_rm!($md, XMM2, $rm);
+        mod_ro_rm!($md, Opcode2, $rm);
         mod_ro_rm!($md, BL, $rm);
         mod_ro_rm!($md, BX, $rm);
         mod_ro_rm!($md, EBX, $rm);
         mod_ro_rm!($md, MM3, $rm);
         mod_ro_rm!($md, XMM3, $rm);
+        mod_ro_rm!($md, Opcode3, $rm);
         mod_ro_rm!($md, AH, $rm);
         mod_ro_rm!($md, SP, $rm);
         mod_ro_rm!($md, ESP, $rm);
         mod_ro_rm!($md, MM4, $rm);
         mod_ro_rm!($md, XMM4, $rm);
+        mod_ro_rm!($md, Opcode4, $rm);
         mod_ro_rm!($md, CH, $rm);
         mod_ro_rm!($md, BP, $rm);
         mod_ro_rm!($md, EBP, $rm);
         mod_ro_rm!($md, MM5, $rm);
         mod_ro_rm!($md, XMM5, $rm);
+        mod_ro_rm!($md, Opcode5, $rm);
         mod_ro_rm!($md, DH, $rm);
         mod_ro_rm!($md, SI, $rm);
         mod_ro_rm!($md, ESI, $rm);
         mod_ro_rm!($md, MM6, $rm);
         mod_ro_rm!($md, XMM6, $rm);
+        mod_ro_rm!($md, Opcode6, $rm);
         mod_ro_rm!($md, BH, $rm);
         mod_ro_rm!($md, DI, $rm);
         mod_ro_rm!($md, EDI, $rm);
         mod_ro_rm!($md, MM7, $rm);
         mod_ro_rm!($md, XMM7, $rm);
+        mod_ro_rm!($md, Opcode7, $rm);
     };
     ($md:ident, [$rm:ident]) => {
         mod_ro_rm!($md, AL, [$rm]);
@@ -92,41 +111,49 @@ macro_rules! mod_rm {
         mod_ro_rm!($md, EAX, [$rm]);
         mod_ro_rm!($md, MM0, [$rm]);
         mod_ro_rm!($md, XMM0, [$rm]);
+        mod_ro_rm!($md, Opcode0, [$rm]);
         mod_ro_rm!($md, CL, [$rm]);
         mod_ro_rm!($md, CX, [$rm]);
         mod_ro_rm!($md, ECX, [$rm]);
         mod_ro_rm!($md, MM1, [$rm]);
         mod_ro_rm!($md, XMM1, [$rm]);
+        mod_ro_rm!($md, Opcode1, [$rm]);
         mod_ro_rm!($md, DL, [$rm]);
         mod_ro_rm!($md, DX, [$rm]);
         mod_ro_rm!($md, EDX, [$rm]);
         mod_ro_rm!($md, MM2, [$rm]);
         mod_ro_rm!($md, XMM2, [$rm]);
+        mod_ro_rm!($md, Opcode2, [$rm]);
         mod_ro_rm!($md, BL, [$rm]);
         mod_ro_rm!($md, BX, [$rm]);
         mod_ro_rm!($md, EBX, [$rm]);
         mod_ro_rm!($md, MM3, [$rm]);
         mod_ro_rm!($md, XMM3, [$rm]);
+        mod_ro_rm!($md, Opcode3, [$rm]);
         mod_ro_rm!($md, AH, [$rm]);
         mod_ro_rm!($md, SP, [$rm]);
         mod_ro_rm!($md, ESP, [$rm]);
         mod_ro_rm!($md, MM4, [$rm]);
         mod_ro_rm!($md, XMM4, [$rm]);
+        mod_ro_rm!($md, Opcode4, [$rm]);
         mod_ro_rm!($md, CH, [$rm]);
         mod_ro_rm!($md, BP, [$rm]);
         mod_ro_rm!($md, EBP, [$rm]);
         mod_ro_rm!($md, MM5, [$rm]);
         mod_ro_rm!($md, XMM5, [$rm]);
+        mod_ro_rm!($md, Opcode5, [$rm]);
         mod_ro_rm!($md, DH, [$rm]);
         mod_ro_rm!($md, SI, [$rm]);
         mod_ro_rm!($md, ESI, [$rm]);
         mod_ro_rm!($md, MM6, [$rm]);
         mod_ro_rm!($md, XMM6, [$rm]);
+        mod_ro_rm!($md, Opcode6, [$rm]);
         mod_ro_rm!($md, BH, [$rm]);
         mod_ro_rm!($md, DI, [$rm]);
         mod_ro_rm!($md, EDI, [$rm]);
         mod_ro_rm!($md, MM7, [$rm]);
         mod_ro_rm!($md, XMM7, [$rm]);
+        mod_ro_rm!($md, Opcode7, [$rm]);
     };
 }
 
@@ -167,6 +194,14 @@ macro_rules! mod_rm_gp8 {
         mod_ro_rm!(Reg, CH, $r);
         mod_ro_rm!(Reg, DH, $r);
         mod_ro_rm!(Reg, BH, $r);
+        mod_ro_rm!(Reg, Opcode0, $r);
+        mod_ro_rm!(Reg, Opcode1, $r);
+        mod_ro_rm!(Reg, Opcode2, $r);
+        mod_ro_rm!(Reg, Opcode3, $r);
+        mod_ro_rm!(Reg, Opcode4, $r);
+        mod_ro_rm!(Reg, Opcode5, $r);
+        mod_ro_rm!(Reg, Opcode6, $r);
+        mod_ro_rm!(Reg, Opcode7, $r);
     };
 }
 
@@ -189,6 +224,14 @@ macro_rules! mod_rm_gp16 {
         mod_ro_rm!(Reg, BP, $r);
         mod_ro_rm!(Reg, SI, $r);
         mod_ro_rm!(Reg, DI, $r);
+        mod_ro_rm!(Reg, Opcode0, $r);
+        mod_ro_rm!(Reg, Opcode1, $r);
+        mod_ro_rm!(Reg, Opcode2, $r);
+        mod_ro_rm!(Reg, Opcode3, $r);
+        mod_ro_rm!(Reg, Opcode4, $r);
+        mod_ro_rm!(Reg, Opcode5, $r);
+        mod_ro_rm!(Reg, Opcode6, $r);
+        mod_ro_rm!(Reg, Opcode7, $r);
     };
 }
 
