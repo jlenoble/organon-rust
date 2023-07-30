@@ -3,6 +3,7 @@
 //! *ref.: Intel® 64 and IA-32 Architectures Software Developer’s Manual, Vol. 1, Section 7.3.1.1*
 
 use super::super::super::{
+    ASM,
     operands::{ Imm8, Imm16 },
     operands::{ AL, CL, DL, BL },
     operands::{ AH, CH, DH, BH },
@@ -18,12 +19,9 @@ pub trait Mov<Dest, Src> {
     fn mov(dest: Dest, src: Src) -> Vec<u8>;
 }
 
-/// IA-32 real-address mode MOV instruction implementations
-pub struct MOV;
-
 macro_rules! r8_imm8 {
     ($r:ty, $op_code:expr) => {
-        impl Mov<$r, Imm8> for MOV {
+        impl Mov<$r, Imm8> for ASM {
             #[inline]
             fn mov(_: $r, imm: Imm8) -> Vec<u8> {
                 vec![$op_code, imm.0]
@@ -50,7 +48,7 @@ rr8_imm8!(0xb0);
 
 macro_rules! r16_imm16 {
     ($r:ty, $op_code:expr) => {
-        impl Mov<$r, Imm16> for MOV {
+        impl Mov<$r, Imm16> for ASM {
             #[inline]
             fn mov(_: $r, imm: Imm16) -> Vec<u8> {
                 vec![$op_code, (imm.0 & 0xff) as u8, ((imm.0 & 0xff00) >> 8) as u8]
@@ -77,7 +75,7 @@ rr16_imm16!(0xb8);
 
 macro_rules! r_r {
     ($r1:tt, $r2:tt, $op_code:literal) => {
-        impl Mov<$r1, $r2> for MOV {
+        impl Mov<$r1, $r2> for ASM {
             #[inline]
             fn mov(_r1: $r1, _r2: $r2)-> Vec<u8> {
                 vec![$op_code, MODRM::encode(Reg, $r2, $r1)]
@@ -146,7 +144,7 @@ rr16_rr16!(0x89);
 
 macro_rules! r_mem_num {
     (AL, $op_code:literal) => {
-        impl Mov<AL, [u16; 1]> for MOV {
+        impl Mov<AL, [u16; 1]> for ASM {
             #[inline]
             fn mov(_: AL, mem: [u16; 1]) -> Vec<u8> {
                 vec![$op_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
@@ -154,7 +152,7 @@ macro_rules! r_mem_num {
         }
     };
     (AX, $op_code:literal) => {
-        impl Mov<AX, [u16; 1]> for MOV {
+        impl Mov<AX, [u16; 1]> for ASM {
             #[inline]
             fn mov(_: AX, mem: [u16; 1]) -> Vec<u8> {
                 vec![$op_code, (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
@@ -162,7 +160,7 @@ macro_rules! r_mem_num {
         }
     };
     ($r:tt, $op_code:literal) => {
-        impl Mov<$r, [u16; 1]> for MOV {
+        impl Mov<$r, [u16; 1]> for ASM {
             #[inline]
             fn mov(_: $r, mem: [u16; 1]) -> Vec<u8> {
                 vec![$op_code, MODRM::encode(Disp0, $r, Disp16), (mem[0] & 0xff) as u8, ((mem[0] & 0xff00) >> 8) as u8]
@@ -207,7 +205,7 @@ rr16_mem16_num!(0xa1, 0x8b);
 
 macro_rules! r_mem_reg {
     ($r1:tt, BP, $op_code:literal) => {
-        impl Mov<$r1, [BP; 1]> for MOV {
+        impl Mov<$r1, [BP; 1]> for ASM {
             #[inline]
             fn mov(_: $r1, _mem: [BP; 1]) -> Vec<u8> {
                 vec![$op_code, MODRM::encode(Disp8, $r1, [BP]), 0x00]
@@ -215,7 +213,7 @@ macro_rules! r_mem_reg {
         }
     };
     ($r1:tt, $r2:tt, $op_code:literal) => {
-        impl Mov<$r1, [$r2; 1]> for MOV {
+        impl Mov<$r1, [$r2; 1]> for ASM {
         #[inline]
             fn mov(_: $r1, _mem: [$r2; 1]) -> Vec<u8> {
                 vec![$op_code, MODRM::encode(Disp0, $r1, [$r2])]

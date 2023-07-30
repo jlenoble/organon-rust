@@ -2,12 +2,9 @@
 //!
 //! *ref. https://www.nasm.us/doc/nasmdoc3.html#section-3.2.1*
 
-/// Structure encapsulating Nasm data declaration pseudo-instructions
-///
-/// *ref. https://www.nasm.us/doc/nasmdoc3.html#section-3.2.1*
-pub struct DATA;
+use super::super::ASM;
 
-impl DATA {
+impl ASM {
     /// Nasm data declaration pseudo-instruction db
     ///
     /// *ref. https://www.nasm.us/doc/nasmdoc3.html#section-3.2.1*
